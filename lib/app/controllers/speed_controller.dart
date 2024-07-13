@@ -1,70 +1,43 @@
-// import 'dart:async';
-// import 'package:get/get.dart';
-// import 'package:geolocator/geolocator.dart';
-// import '../models/speed_model.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+import 'package:get/get.dart';
 
-// class SpeedController extends GetxController {
-//   var speedModel = SpeedModel().obs;
-//   StreamSubscription<Position>? _positionStreamSubscription;
-//   var errorMessage = ''.obs;
+class OverlayController extends GetxController {
+  Future<void> requestPermission() async {
+    if (!await FlutterOverlayWindow.isPermissionGranted()) {
+      await FlutterOverlayWindow.requestPermission();
+    }
+  }
 
-//   @override
-//   void onInit() {
-//     super.onInit();
-//   }
+  void showOverlay() async {
+    await requestPermission();
 
-//   Future<void> startTracking() async {
-//     errorMessage.value = '';
+    // Define the `Text` widget you want to display
+    final overlayText = Center(
+      child: Material(
+        color: Colors.transparent,
+        child: Text(
+          'Hello, I am an overlay!',
+          style: TextStyle(
+            fontSize: 24,
+            color: Colors.black,
+            backgroundColor: Colors.white,
+          ),
+        ),
+      ),
+    );
 
-//     try {
-//       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-//       if (!serviceEnabled) {
-//         throw Exception('Location services are disabled.');
-//       }
+    // Show the `Text` widget as an overlay
+    FlutterOverlayWindow.showOverlay(
+      overlayTitle: 'Overlay Title',
+      // overlayText: overlayText,
+      positionGravity: PositionGravity.left, // Position of the overlay text
+      width: 300, // Width of the overlay text box
+      height: 100, // Height of the overlay text box
+    );
+  }
 
-//       LocationPermission permission = await Geolocator.checkPermission();
-//       if (permission == LocationPermission.denied) {
-//         permission = await Geolocator.requestPermission();
-//         if (permission == LocationPermission.denied) {
-//           throw Exception('Location permissions are denied.');
-//         }
-//       }
-
-//       if (permission == LocationPermission.deniedForever) {
-//         throw Exception(
-//             'Location permissions are permanently denied, we cannot request permissions.');
-//       }
-
-//       _positionStreamSubscription = Geolocator.getPositionStream(
-//         locationSettings: const LocationSettings(
-//           accuracy: LocationAccuracy.best,
-//           distanceFilter: 5,
-//         ),
-//       ).listen(
-//         (Position position) {
-//           speedModel.update((model) {
-//             model!.speed = position.speed;
-//           });
-//         },
-//         onError: (error) {
-//           errorMessage.value = 'Error occurred: $error';
-//         },
-//       );
-//     } catch (e) {
-//       errorMessage.value = 'Exception: $e';
-//     }
-//   }
-
-//   void stopTracking() {
-//     _positionStreamSubscription?.cancel();
-//     speedModel.update((model) {
-//       model!.speed = 0.0;
-//     });
-//   }
-
-//   @override
-//   void onClose() {
-//     _positionStreamSubscription?.cancel();
-//     super.onClose();
-//   }
-// }
+  void hideOverlay() {
+    FlutterOverlayWindow.closeOverlay();
+  }
+}
