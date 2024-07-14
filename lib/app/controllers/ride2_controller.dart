@@ -4,7 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 import 'package:speed_meter_app/utils/vacent_disatance.dart';
 
-class RideController extends GetxController {
+class Ride2Controller extends GetxController {
   double packageCost = 4.92;
   double movingRate = 2.29;
   double waitingRate = 0.01583;
@@ -18,6 +18,7 @@ class RideController extends GetxController {
   String startTime = '';
   String endTime = '';
   Position? lastPosition;
+  Position? currentPosition;
   StreamSubscription<Position>? positionStreamSubscription;
   Timer? updateTimer;
   int waitingTime = 0; // Store waiting time in seconds
@@ -36,8 +37,10 @@ class RideController extends GetxController {
       endTime = '';
       totalDistance = 0.0;
       speed = 0.0;
+      currentPosition = await Geolocator.getCurrentPosition();
+      lastPosition = await Geolocator.getCurrentPosition();
       // lastPosition = await Geolocator.getCurrentPosition();
-      lastPosition = null;
+      // lastPosition = null;
       waitingTime = 0;
       movingTime = 0;
       totalFare = 0.0;
@@ -45,52 +48,68 @@ class RideController extends GetxController {
       waitingFare = 0.0;
       update();
 
-      positionStreamSubscription = Geolocator.getPositionStream(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          distanceFilter: 1,
-        ),
-      ).listen((Position position) {
-        final currentSpeed = position.speed * 3.6;
+      // positionStreamSubscription = Geolocator.getPositionStream(
+      //   locationSettings: const LocationSettings(
+      //     accuracy: LocationAccuracy.high,
+      //     distanceFilter: 1,
+      //   ),
+      // ).listen((Position position) {
+      //   final currentSpeed = position.speed * 3.6;
 
-        if (lastPosition == null) {
-          tunnelTime += 1;
-          update();
-        }
-        if (lastPosition != null) {
-          final distance = vincentyDistance(
-            lastPosition!.latitude,
-            lastPosition!.longitude,
-            position.latitude,
-            position.longitude,
-          );
+      //   if (lastPosition == null) {
+      //     tunnelTime += 1;
+      //     update();
+      //   }
+      //   if (lastPosition != null) {
+      //     final distance = vincentyDistance(
+      //       lastPosition!.latitude,
+      //       lastPosition!.longitude,
+      //       position.latitude,
+      //       position.longitude,
+      //     );
 
-          if (currentSpeed >= 5) {
-            // isMoving = true;
-            // movingTime += 1;
-            totalDistance += distance / 1000;
-          } else if (currentSpeed < 5) {
-            // isMoving = false;
-            // waitingTime += 1;
-            // totalDistance += (distance - 0.001) / 1000;
-          }
-          // calculateFare();
-          speed = currentSpeed;
-          update();
-        }
+      //     if (currentSpeed >= 5) {
+      //       // isMoving = true;
+      //       // movingTime += 1;
+      //       totalDistance += distance / 1000;
+      //     } else if (currentSpeed < 5) {
+      //       // isMoving = false;
+      //       // waitingTime += 1;
+      //       // totalDistance += (distance - 0.001) / 1000;
+      //     }
+      //     // calculateFare();
+      //     speed = currentSpeed;
+      //     update();
+      //   }
 
-        lastPosition = position;
-      });
+      //   lastPosition = position;
+      // });
 
-      updateTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      updateTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
         if (isTracking) {
-          if (speed < 5) {
+          if (speed < 2) {
             isMoving = false;
             waitingTime += 1;
-          } else if (speed >= 5) {
+          } else if (speed >= 2) {
             isMoving = true;
             movingTime += 1;
           }
+          double dist = vincentyDistance(
+            lastPosition!.latitude,
+            lastPosition!.longitude,
+            currentPosition!.latitude,
+            currentPosition!.longitude,
+          );
+          double distm = dist / 1000;
+          double tspeed = distm * 3.6;
+          if (tspeed > 1) speed = tspeed;
+          if (distm > 1) totalDistance += dist / 1000;
+
+          print('distance: ${totalDistance.toStringAsFixed(3)}');
+          print('speed: ${speed.toStringAsFixed(3)}');
+
+          lastPosition = currentPosition;
+          currentPosition = await Geolocator.getCurrentPosition();
           calculateFare();
           update();
         }
@@ -121,6 +140,7 @@ class RideController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
+
     setPackage1();
   }
 
@@ -176,3 +196,26 @@ class RideController extends GetxController {
     packageCost = 7.42;
   }
 }
+
+
+// Timer.periodic(const Duration(seconds: 1), (timer) async {
+//         if (isTracking) {
+//           double dist = vincentyDistance(
+//             lastPosition!.latitude,
+//             lastPosition!.longitude,
+//             currentPosition!.latitude,
+//             currentPosition!.longitude,
+//           );
+//           double distm = dist / 1000;
+//           double tspeed = distm * 3.6;
+//           speed = tspeed;
+//           if (distm > 1) totalDistance += dist / 1000;
+//           print('distance: ${totalDistance.toStringAsFixed(3)}');
+//           print('speed: ${speed.toStringAsFixed(3)}');
+
+//           lastPosition = currentPosition;
+//           currentPosition = await Geolocator.getCurrentPosition();
+//         } else {
+//           timer.cancel();
+//         }
+//       });

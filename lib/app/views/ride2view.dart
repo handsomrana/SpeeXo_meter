@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:speed_meter_app/app/controllers/ride_controller.dart';
-import 'package:speed_meter_app/app/widgets/package_alert_dialog_widget.dart';
+import 'package:speed_meter_app/app/controllers/ride2_controller.dart';
 import 'package:speed_meter_app/app/widgets/speed_meter_gauge.dart';
 
 // ignore: must_be_immutable
-class RideView extends StatelessWidget {
-  RideView({super.key});
+class Ride2View extends StatelessWidget {
+  Ride2View({super.key});
 
   String formatTime(String time) {
     if (time.isEmpty) return '';
@@ -25,17 +24,17 @@ class RideView extends StatelessWidget {
     return '${totalMinutes.toStringAsFixed(2)} minutes';
   }
 
-  void _showDialog(BuildContext context, Axis direction) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return PackageAlertDialogWidget(
-            rideController: rideController, direction: direction);
-      },
-    );
-  }
+  // void _showDialog(BuildContext context, Axis direction) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return PackageAlertDialogWidget(
+  //           rideController: ride2Controller, direction: direction);
+  //     },
+  //   );
+  // }
 
-  RideController rideController = Get.put(RideController());
+  Ride2Controller ride2Controller = Get.put(Ride2Controller());
 
   @override
   Widget build(BuildContext context) {
@@ -54,8 +53,8 @@ class RideView extends StatelessWidget {
 
           return Padding(
             padding: EdgeInsets.all(padding),
-            child: GetBuilder<RideController>(
-              init: RideController(),
+            child: GetBuilder<Ride2Controller>(
+              init: Ride2Controller(),
               builder: (controller) {
                 return Center(
                   child: isTablet
@@ -73,7 +72,7 @@ class RideView extends StatelessWidget {
   }
 
   SingleChildScrollView tabletOrientationView(
-      RideController controller,
+      Ride2Controller controller,
       double fontSize,
       double buttonFontSize,
       BuildContext context,
@@ -110,7 +109,7 @@ class RideView extends StatelessWidget {
                   ),
                 ],
                 Text(
-                  'Distance: ${controller.totalDistance.toStringAsFixed(3)} km',
+                  'Distance: ${controller.totalDistance.toStringAsFixed(2)} km',
                   style: TextStyle(
                     fontSize: fontSize + 4,
                     fontWeight: FontWeight.bold,
@@ -156,7 +155,7 @@ class RideView extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     controller.stopTracking();
-                    _showDialog(context, direction);
+                    // _showDialog(context, direction);
                   },
                   child: Text(
                     "Select Package",
@@ -201,7 +200,7 @@ class RideView extends StatelessWidget {
     );
   }
 
-  Column mobileOrientationView(RideController controller, double fontSize,
+  Column mobileOrientationView(Ride2Controller controller, double fontSize,
       double buttonFontSize, BuildContext context, Axis direction) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -233,13 +232,13 @@ class RideView extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        Text(
-          'Speed: ${controller.speed.toStringAsFixed(2)} km/h',
-          style: TextStyle(
-            fontSize: fontSize + 4,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        // Text(
+        //   'Speed: ${controller.speed.toStringAsFixed(2)} km/h',
+        //   style: TextStyle(
+        //     fontSize: fontSize + 4,
+        //     fontWeight: FontWeight.bold,
+        //   ),
+        // ),
         Text(
           'Fare: ${controller.totalFare.toStringAsFixed(3)} \$',
           style: TextStyle(
@@ -277,7 +276,7 @@ class RideView extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             controller.stopTracking();
-            _showDialog(context, direction);
+            // _showDialog(context, direction);
           },
           child: Text(
             "Select Package",

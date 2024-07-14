@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:speed_meter_app/app/services/background_services.dart';
 import 'package:speed_meter_app/app/views/home_view.dart';
 import 'package:speed_meter_app/app/views/login_view.dart';
+import 'package:speed_meter_app/app/views/ride2view.dart';
 import 'package:speed_meter_app/app/views/ride_view.dart';
-import 'package:speed_meter_app/app/views/speed_view.dart';
+import 'package:speed_meter_app/app/widgets/ride_overlay_widget.dart';
 
 // overlay entry point
-@pragma("vm:entry-point")
-void overlayMain() async {
-  // WidgetsFlutterBinding.ensureInitialized();
+// @pragma("vm:entry-point")
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   // await Permission.notification.isDenied.then(
   //   (value) {
   //     if (value) {
@@ -21,6 +19,17 @@ void overlayMain() async {
   // );
   // await initializeBackgroundService();
   runApp(const CarRentalApp());
+}
+
+@pragma("vm:entry-point")
+void overlayMain() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: RideOverlay(),
+    ),
+  );
 }
 
 class CarRentalApp extends StatelessWidget {
@@ -33,7 +42,7 @@ class CarRentalApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: RideView(),
+      home: Ride2View(),
       getPages: [
         GetPage(name: '/login', page: () => LoginView()),
         GetPage(name: '/home', page: () => HomeView()),
