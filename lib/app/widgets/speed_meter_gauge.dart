@@ -66,28 +66,35 @@ class SpeedMeterGauge extends StatelessWidget {
                       value: speed.toDouble(),
                     )
                   ],
-                  annotations: <GaugeAnnotation>[
+                  annotations: const <GaugeAnnotation>[
+                    // GaugeAnnotation(
+                    //     widget: Container(
+                    //       alignment: Alignment.center,
+                    //       child: speed > 1
+                    //           ? Text(
+                    //               speed.toStringAsFixed(1),
+                    //               style: const TextStyle(
+                    //                   fontSize: 25,
+                    //                   fontWeight: FontWeight.bold),
+                    //             )
+                    //           : const Text(
+                    //               '0.0',
+                    //               style: TextStyle(
+                    //                   fontSize: 25,
+                    //                   fontWeight: FontWeight.bold),
+                    //             ),
+                    //     ),
+                    //     angle: 90,
+                    //     positionFactor: 0.8),
                     GaugeAnnotation(
-                        widget: Container(
-                          alignment: Alignment.center,
-                          child: speed > 1
-                              ? Text(
-                                  speed.toStringAsFixed(1),
-                                  style: const TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold),
-                                )
-                              : const Text(
-                                  '0.0',
-                                  style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                        ),
-                        angle: 90,
-                        positionFactor: 0.8),
-                    const GaugeAnnotation(
-                        angle: 90, positionFactor: 0.5, widget: Text("km/h"))
+                      angle: 90,
+                      positionFactor: 0.8,
+                      widget: Text(
+                        "km/h",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -154,28 +161,35 @@ class SpeedMeterGauge extends StatelessWidget {
                       value: speed.toDouble(),
                     )
                   ],
-                  annotations: <GaugeAnnotation>[
+                  annotations: const <GaugeAnnotation>[
+                    // GaugeAnnotation(
+                    //     widget: Container(
+                    //       alignment: Alignment.center,
+                    //       child: speed > 5
+                    //           ? Text(
+                    //               speed.toStringAsFixed(1),
+                    //               style: const TextStyle(
+                    //                   fontSize: 25,
+                    //                   fontWeight: FontWeight.bold),
+                    //             )
+                    //           : const Text(
+                    //               '0.0',
+                    //               style: TextStyle(
+                    //                   fontSize: 25,
+                    //                   fontWeight: FontWeight.bold),
+                    //             ),
+                    //     ),
+                    //     angle: 90,
+                    //     positionFactor: 0.9),
                     GaugeAnnotation(
-                        widget: Container(
-                          alignment: Alignment.center,
-                          child: speed > 5
-                              ? Text(
-                                  speed.toStringAsFixed(1),
-                                  style: const TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold),
-                                )
-                              : const Text(
-                                  '0.0',
-                                  style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                        ),
-                        angle: 90,
-                        positionFactor: 0.9),
-                    const GaugeAnnotation(
-                        angle: 90, positionFactor: 0.6, widget: Text("km/h"))
+                      angle: 90,
+                      positionFactor: 0.8,
+                      widget: Text(
+                        "km/h",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ],
                 ),
               ],
