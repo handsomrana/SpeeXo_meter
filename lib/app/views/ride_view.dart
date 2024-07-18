@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:speed_meter_app/app/controllers/ride_controller.dart';
+import 'package:speed_meter_app/app/widgets/add_extra_widget.dart';
+import 'package:speed_meter_app/app/widgets/add_tolls_dialog.dart';
 import 'package:speed_meter_app/app/widgets/package_alert_dialog_widget.dart';
 
 // ignore: must_be_immutable
@@ -33,6 +35,26 @@ class RideView extends StatelessWidget {
     );
   }
 
+  void _showAddExtraDialog(BuildContext context, bool isTablet) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AddExtraWidget(orientation: isTablet);
+      },
+    );
+  }
+
+  void _showTollsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AddTollsDialogWidget(
+            // rideController: rideController,
+            );
+      },
+    );
+  }
+
   RideController rideController = Get.put(RideController());
 
   @override
@@ -57,10 +79,16 @@ class RideView extends StatelessWidget {
               builder: (controller) {
                 return Center(
                   child: isTablet
-                      ? tabletOrientationView(controller, fontSize,
-                          buttonFontSize, context, direction)
+                      ? tabletOrientationView(
+                          controller,
+                          fontSize,
+                          buttonFontSize,
+                          context,
+                          false,
+                          direction,
+                        )
                       : mobileOrientationView(controller, fontSize,
-                          buttonFontSize, context, direction),
+                          buttonFontSize, context, direction, true),
                 );
               },
             ),
@@ -75,22 +103,13 @@ class RideView extends StatelessWidget {
       double fontSize,
       double buttonFontSize,
       BuildContext context,
+      bool isTablet,
       Axis direction) {
     return SingleChildScrollView(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // SpeedMeterGauge(
-          //   speed: controller.speed,
-          //   size: 250,
-          // ),
-          // Image.network(
-          //   "https://th.bing.com/th/id/OIP.2n-_gyMrfZ1O6tLBPLQZ-QHaFH?rs=1&pid=ImgDetMain",
-          //   fit: BoxFit.cover,
-          //   height: 400,
-          //   width: 300,
-          // ),
           Image.asset(
             "assets/images/map.jpeg",
             fit: BoxFit.cover,
@@ -110,17 +129,8 @@ class RideView extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                // if (controller.startTime.isNotEmpty)
-                //   Text(
-                //     'Start Time: ${formatTime(controller.startTime)}',
-                //     style: TextStyle(fontSize: fontSize),
-                //   ),
                 if (!controller.isTracking &&
                     controller.endTime.isNotEmpty) ...[
-                  // Text(
-                  //   'End Time: ${formatTime(controller.endTime)}',
-                  //   style: TextStyle(fontSize: fontSize),
-                  // ),
                   Text(
                     'Duration: ${calculateDuration(controller.startTime, controller.endTime)}',
                     style: TextStyle(fontSize: fontSize),
@@ -133,46 +143,10 @@ class RideView extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                (controller.tunnelTestingPosition == null)
-                    ? Text(
-                        'Tunnel Testing Location \n: Location is null',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: fontSize + 4,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )
-                    : Text(
-                        'Tunnel Testing Location \n: ${controller.tunnelTestingPosition}',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                // Text(
-                //   'Speed: ${controller.speed.toStringAsFixed(2)} km/h',
-                //   style: TextStyle(
-                //     fontSize: fontSize + 4,
-                //     fontWeight: FontWeight.bold,
-                //   ),
-                // ),
                 Text(
                   'Waiting Time: ${controller.getFormattedWaitingTime()} minutes',
                   style: TextStyle(fontSize: fontSize),
                 ),
-                Text(
-                  'Moving Time: ${controller.movingTime.toStringAsFixed(2)} minutes',
-                  style: TextStyle(fontSize: fontSize),
-                ),
-                Text(
-                  'Tunnel Time: ${controller.tunnelTime.toStringAsFixed(0)} sec',
-                  style: TextStyle(fontSize: fontSize),
-                ),
-                // Text(
-                //   'Waiting Fare: ${controller.waitingFare.toStringAsFixed(3)} \$',
-                //   style: TextStyle(fontSize: fontSize),
-                // ),
                 const SizedBox(height: 15),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -198,57 +172,36 @@ class RideView extends StatelessWidget {
                           style: TextStyle(fontSize: buttonFontSize),
                         ),
                       ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
                     ElevatedButton(
                       onPressed: () {
-                        if (controller.isTunnel) {
-                          controller.onResumeTracking();
-                        } else {
-                          controller.onPauseTracking();
-                        }
+                        _showAddExtraDialog(context, isTablet);
                       },
                       child: Text(
-                        controller.isTunnel ? "End Tunnel" : "Start Tunnel",
+                        "Add Extra",
+                        style: TextStyle(fontSize: buttonFontSize),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        _showTollsDialog(
+                          context,
+                        );
+                      },
+                      child: Text(
+                        "Add Tolls",
                         style: TextStyle(fontSize: buttonFontSize),
                       ),
                     ),
                   ],
-                ),
-                // const SizedBox(height: 20),
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                //   children: [
-                //     TextButton(
-                //       onPressed: () async {
-                //         final bool status =
-                //             await FlutterOverlayWindow.isPermissionGranted();
-                //         if (!status) {
-                //           await FlutterOverlayWindow.requestPermission();
-                //         }
-                //         if (await FlutterOverlayWindow.isActive()) return;
-                //         await FlutterOverlayWindow.showOverlay(
-                //           enableDrag: true,
-                //           overlayTitle: "Ride Overlay",
-                //           overlayContent: 'Overlay Enabled',
-                //           flag: OverlayFlag.defaultFlag,
-                //           visibility: NotificationVisibility.visibilityPublic,
-                //           positionGravity: PositionGravity.auto,
-                //           height: (MediaQuery.of(context).size.height * 0.75)
-                //               .toInt(),
-                //           width: WindowSize.matchParent,
-                //           startPosition: const OverlayPosition(0, -259),
-                //         );
-                //       },
-                //       child: const Text("Show Overlay"),
-                //     ),
-                //     TextButton(
-                //       onPressed: () async {
-                //         // log('Try to close' as num);
-                //         await FlutterOverlayWindow.closeOverlay();
-                //       },
-                //       child: const Text("Close Overlay"),
-                //     ),
-                //   ],
-                // ),
+                )
               ],
             ),
           ),
@@ -257,38 +210,24 @@ class RideView extends StatelessWidget {
     );
   }
 
-  Column mobileOrientationView(RideController controller, double fontSize,
-      double buttonFontSize, BuildContext context, Axis direction) {
+  Column mobileOrientationView(
+      RideController controller,
+      double fontSize,
+      double buttonFontSize,
+      BuildContext context,
+      Axis direction,
+      bool isTablet) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Image.network(
-        //   "https://th.bing.com/th/id/OIP.2n-_gyMrfZ1O6tLBPLQZ-QHaFH?rs=1&pid=ImgDetMain",
-        //   fit: BoxFit.cover,
-        //   height: 200,
-        //   width: double.maxFinite,
-        // ),
         Image.asset(
           "assets/images/map.jpeg",
           fit: BoxFit.cover,
           height: 200,
           width: double.maxFinite,
         ),
-        // SpeedMeterGauge(
-        //   speed: controller.speed,
-        //   size: 250,
-        // ),
-        // if (controller.startTime.isNotEmpty)
-        //   Text(
-        //     'Start Time: ${formatTime(controller.startTime)}',
-        //     style: TextStyle(fontSize: fontSize),
-        //   ),
         if (!controller.isTracking && controller.endTime.isNotEmpty) ...[
-          // Text(
-          //   'End Time: ${formatTime(controller.endTime)}',
-          //   style: TextStyle(fontSize: fontSize),
-          // ),
           Text(
             'Duration: ${calculateDuration(controller.startTime, controller.endTime)}',
             style: TextStyle(fontSize: fontSize),
@@ -301,13 +240,6 @@ class RideView extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        // Text(
-        //   'Speed: ${controller.speed.toStringAsFixed(2)} km/h',
-        //   style: TextStyle(
-        //     fontSize: fontSize + 4,
-        //     fontWeight: FontWeight.bold,
-        //   ),
-        // ),
         Text(
           'Fare: ${controller.totalFare.toStringAsFixed(1)} \$',
           style: TextStyle(
@@ -318,42 +250,10 @@ class RideView extends StatelessWidget {
         const SizedBox(
           height: 10,
         ),
-        (controller.tunnelTestingPosition == null)
-            ? Text(
-                'Tunnel Testing Location \n: Location is null',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: fontSize + 4,
-                  fontWeight: FontWeight.bold,
-                ),
-              )
-            : Text(
-                'Tunnel Testing Location \n: ${controller.tunnelTestingPosition}',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-        const SizedBox(
-          height: 10,
-        ),
         Text(
           'Waiting Time: ${controller.getFormattedWaitingTime()} minutes',
           style: TextStyle(fontSize: fontSize),
         ),
-        Text(
-          'Moving Time: ${controller.movingTime.toStringAsFixed(0)} sec',
-          style: TextStyle(fontSize: fontSize),
-        ),
-        Text(
-          'Tunnel Time: ${controller.tunnelTime.toStringAsFixed(0)} sec',
-          style: TextStyle(fontSize: fontSize),
-        ),
-        // Text(
-        //   'Waiting Fare: ${controller.waitingFare.toStringAsFixed(3)} \$',
-        //   style: TextStyle(fontSize: fontSize),
-        // ),
         const SizedBox(height: 20),
         if (!controller.isTunnel || controller.isMoving)
           ElevatedButton(
@@ -380,47 +280,38 @@ class RideView extends StatelessWidget {
         const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () {
-            if (controller.isTunnel) {
-              controller.onResumeTracking();
-            } else {
-              controller.onPauseTracking();
-            }
+            _showAddExtraDialog(context, isTablet);
           },
           child: Text(
-            controller.isTunnel ? "End Tunnel" : "Start Tunnel",
+            "Add Extra",
             style: TextStyle(fontSize: buttonFontSize),
           ),
         ),
-        // const SizedBox(height: 10),
-        // TextButton(
-        //   onPressed: () async {
-        //     final bool status =
-        //         await FlutterOverlayWindow.isPermissionGranted();
-        //     if (!status) {
-        //       await FlutterOverlayWindow.requestPermission();
+        ElevatedButton(
+          onPressed: () {
+            _showTollsDialog(
+              context,
+            );
+          },
+          child: Text(
+            "Add Tolls",
+            style: TextStyle(fontSize: buttonFontSize),
+          ),
+        ),
+        // ElevatedButton(
+        //   onPressed: () {
+        //     if (controller.isTunnel) {
+        //       controller.onResumeTracking();
+        //     } else {
+        //       controller.onPauseTracking();
         //     }
-        //     if (await FlutterOverlayWindow.isActive()) return;
-        //     await FlutterOverlayWindow.showOverlay(
-        //       enableDrag: true,
-        //       overlayTitle: "Ride Overlay",
-        //       overlayContent: 'Overlay Enabled',
-        //       flag: OverlayFlag.defaultFlag,
-        //       visibility: NotificationVisibility.visibilityPublic,
-        //       positionGravity: PositionGravity.auto,
-        //       height: (MediaQuery.of(context).size.height * 0.75).toInt(),
-        //       width: WindowSize.matchParent,
-        //       startPosition: const OverlayPosition(0, -259),
-        //     );
         //   },
-        //   child: const Text("Show Overlay"),
+        //   child: Text(
+        //     controller.isTunnel ? "End Tunnel" : "Start Tunnel",
+        //     style: TextStyle(fontSize: buttonFontSize),
+        //   ),
         // ),
-        // TextButton(
-        //   onPressed: () async {
-        //     // log('Try to close' as num);
-        //     await FlutterOverlayWindow.closeOverlay();
-        //   },
-        //   child: const Text("Close Overlay"),
-        // ),
+        // const SizedBox(height: 10),
       ],
     );
   }

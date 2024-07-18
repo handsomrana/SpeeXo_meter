@@ -42,7 +42,7 @@ class CarRentalApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Ride2View(),
+      home: RideView(),
       getPages: [
         GetPage(name: '/login', page: () => LoginView()),
         GetPage(name: '/home', page: () => HomeView()),

@@ -8,6 +8,8 @@ class RideController extends GetxController {
   double packageCost = 4.92;
   double movingRate = 2.29;
   double waitingRate = 0.01583;
+  double extraAmount = 0.0;
+  double tollsAmount = 0.0;
   Position? tunnelTestingPosition;
   double totalFare = 0.0;
   double movingFare = 0.0;
@@ -46,6 +48,8 @@ class RideController extends GetxController {
       endTime = '';
       totalDistance = 0.0;
       speed = 0.0;
+      extraAmount = 0.0;
+      tollsAmount = 0.0;
       // lastPosition = await Geolocator.getCurrentPosition();
       lastPosition = null;
       waitingTime = 0;
@@ -67,7 +71,7 @@ class RideController extends GetxController {
           accuracy: LocationAccuracy.high,
           distanceFilter: 1,
         ),
-      ).listen((Position position) {
+      ).listen((Position position) async {
         final currentSpeed = position.speed * 3.6;
 
         if (lastPosition != null) {
@@ -91,8 +95,8 @@ class RideController extends GetxController {
           speed = currentSpeed;
           update();
         }
-
-        lastPosition = position;
+        lastPosition = await Geolocator.getLastKnownPosition();
+        // lastPosition = position;
       });
 
       updateTimer = Timer.periodic(
@@ -243,14 +247,14 @@ class RideController extends GetxController {
     update();
   }
 
-  Future<void> tunnelPositionTesting() async {
-    Timer.periodic(const Duration(seconds: 1), (timer) async {
-      tunnelTestingPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-      update();
-    });
-  }
+  // Future<void> tunnelPositionTesting() async {
+  //   Timer.periodic(const Duration(seconds: 1), (timer) async {
+  //     tunnelTestingPosition = await Geolocator.getCurrentPosition(
+  //       desiredAccuracy: LocationAccuracy.high,
+  //     );
+  //     update();
+  //   });
+  // }
 
   @override
   void onClose() {
@@ -263,7 +267,7 @@ class RideController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    await tunnelPositionTesting();
+    //  await tunnelPositionTesting();
     setPackage1();
   }
 
@@ -295,10 +299,25 @@ class RideController extends GetxController {
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
+  void addExtraAmount(double amount) {
+    extraAmount = amount;
+    update();
+  }
+
+  void addTollsAmount(double amount) {
+    tollsAmount = amount;
+    update();
+  }
+
   void calculateFare() {
     movingFare = totalDistance * movingRate;
     waitingFare = waitingTime * waitingRate;
-    totalFare = totalTunnelFare + packageCost + movingFare + waitingFare;
+    totalFare = tollsAmount +
+        extraAmount +
+        totalTunnelFare +
+        packageCost +
+        movingFare +
+        waitingFare;
   }
 
   void setPackage1() {
