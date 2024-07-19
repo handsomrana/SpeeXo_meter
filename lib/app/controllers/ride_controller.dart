@@ -21,6 +21,7 @@ class RideController extends GetxController {
   String startTime = '';
   String endTime = '';
   Position? lastPosition;
+  Position? startPosition;
   Position? tunnelStartPosition;
   Position? tunnelEndPosition;
   double tunnelDistance = 0.0;
@@ -50,7 +51,7 @@ class RideController extends GetxController {
       speed = 0.0;
       extraAmount = 0.0;
       tollsAmount = 0.0;
-      // lastPosition = await Geolocator.getCurrentPosition();
+      startPosition = await Geolocator.getCurrentPosition();
       lastPosition = null;
       waitingTime = 0;
       movingTime = 0;

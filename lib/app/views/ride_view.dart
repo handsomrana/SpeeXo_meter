@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:isar/isar.dart';
 import 'package:speed_meter_app/app/controllers/ride_controller.dart';
+import 'package:speed_meter_app/app/local_database/isar_services.dart';
 import 'package:speed_meter_app/app/widgets/add_extra_widget.dart';
 import 'package:speed_meter_app/app/widgets/add_tolls_dialog.dart';
 import 'package:speed_meter_app/app/widgets/package_alert_dialog_widget.dart';
@@ -9,6 +11,8 @@ import 'package:speed_meter_app/app/widgets/package_alert_dialog_widget.dart';
 // ignore: must_be_immutable
 class RideView extends StatelessWidget {
   RideView({super.key});
+
+  final isarr = IsarServices();
 
   String formatTime(String time) {
     if (time.isEmpty) return '';
@@ -278,26 +282,58 @@ class RideView extends StatelessWidget {
             ),
           ),
         const SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: () {
-            _showAddExtraDialog(context, isTablet);
-          },
-          child: Text(
-            "Add Extra",
-            style: TextStyle(fontSize: buttonFontSize),
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                _showAddExtraDialog(context, isTablet);
+              },
+              child: Text(
+                "Add Extra",
+                style: TextStyle(fontSize: buttonFontSize),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _showTollsDialog(
+                  context,
+                );
+              },
+              child: Text(
+                "Add Tolls",
+                style: TextStyle(fontSize: buttonFontSize),
+              ),
+            ),
+          ],
         ),
-        ElevatedButton(
-          onPressed: () {
-            _showTollsDialog(
-              context,
-            );
-          },
-          child: Text(
-            "Add Tolls",
-            style: TextStyle(fontSize: buttonFontSize),
-          ),
+        const SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                isarr.storeRideCollection();
+              },
+              child: Text(
+                "Add History",
+                style: TextStyle(fontSize: buttonFontSize),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                isarr.readRideCollection();
+              },
+              child: Text(
+                "Show History",
+                style: TextStyle(fontSize: buttonFontSize),
+              ),
+            ),
+          ],
         ),
+        if (isarr.readedCollections != null)
+          Text(isarr.readedCollections!.fare.toString()),
+        // if (!controller.isTracking && !controller.isTunnel)
         // ElevatedButton(
         //   onPressed: () {
         //     if (controller.isTunnel) {

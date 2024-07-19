@@ -209,7 +209,10 @@ class AddTollsDialogWidget extends StatelessWidget {
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(toll.name),
+                        Text(
+                          toll.name,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         Text("\$${toll.price.toStringAsFixed(2)}"),
                       ],
                     ),
