@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:speed_meter_app/app/local_database/isar_services.dart';
 import 'package:speed_meter_app/app/views/home_view.dart';
 import 'package:speed_meter_app/app/views/login_view.dart';
 import 'package:speed_meter_app/app/views/ride2view.dart';
@@ -8,8 +9,10 @@ import 'package:speed_meter_app/app/widgets/ride_overlay_widget.dart';
 
 // overlay entry point
 // @pragma("vm:entry-point")
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final IsarServices isarServices = IsarServices();
+  await isarServices.getRides();
   // await Permission.notification.isDenied.then(
   //   (value) {
   //     if (value) {

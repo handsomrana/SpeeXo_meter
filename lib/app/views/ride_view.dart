@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:isar/isar.dart';
 import 'package:speed_meter_app/app/controllers/ride_controller.dart';
+import 'package:speed_meter_app/app/local_database/collections/ride_collection.dart';
 import 'package:speed_meter_app/app/local_database/isar_services.dart';
+import 'package:speed_meter_app/app/views/history_view.dart';
 import 'package:speed_meter_app/app/widgets/add_extra_widget.dart';
 import 'package:speed_meter_app/app/widgets/add_tolls_dialog.dart';
 import 'package:speed_meter_app/app/widgets/package_alert_dialog_widget.dart';
@@ -12,7 +13,7 @@ import 'package:speed_meter_app/app/widgets/package_alert_dialog_widget.dart';
 class RideView extends StatelessWidget {
   RideView({super.key});
 
-  final isarr = IsarServices();
+  final IsarServices isarServices = IsarServices();
 
   String formatTime(String time) {
     if (time.isEmpty) return '';
@@ -155,27 +156,27 @@ class RideView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    if (!controller.isTunnel || controller.isMoving)
-                      ElevatedButton(
-                        onPressed: controller.isTracking
-                            ? controller.stopTracking
-                            : controller.startTracking,
-                        child: Text(
-                          controller.isTracking ? 'Stop' : 'Start',
-                          style: TextStyle(fontSize: buttonFontSize),
-                        ),
+                    // if (!controller.isTunnel || controller.isMoving)
+                    ElevatedButton(
+                      onPressed: controller.isTracking
+                          ? controller.stopTracking
+                          : controller.startTracking,
+                      child: Text(
+                        controller.isTracking ? 'Stop' : 'Start',
+                        style: TextStyle(fontSize: buttonFontSize),
                       ),
-                    if (!controller.isTracking && !controller.isTunnel)
-                      ElevatedButton(
-                        onPressed: () {
-                          controller.stopTracking();
-                          _showDialog(context, direction);
-                        },
-                        child: Text(
-                          "Select Package",
-                          style: TextStyle(fontSize: buttonFontSize),
-                        ),
+                    ),
+                    // if (!controller.isTracking && !controller.isTunnel)
+                    ElevatedButton(
+                      onPressed: () {
+                        controller.stopTracking();
+                        _showDialog(context, direction);
+                      },
+                      child: Text(
+                        "Select Package",
+                        style: TextStyle(fontSize: buttonFontSize),
                       ),
+                    ),
                   ],
                 ),
                 const SizedBox(
@@ -205,7 +206,17 @@ class RideView extends StatelessWidget {
                       ),
                     ),
                   ],
-                )
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    await isarServices.getRides();
+                    Get.to(() => const HistoryView());
+                  },
+                  child: Text(
+                    "Show History",
+                    style: TextStyle(fontSize: buttonFontSize),
+                  ),
+                ),
               ],
             ),
           ),
@@ -259,28 +270,28 @@ class RideView extends StatelessWidget {
           style: TextStyle(fontSize: fontSize),
         ),
         const SizedBox(height: 20),
-        if (!controller.isTunnel || controller.isMoving)
-          ElevatedButton(
-            onPressed: controller.isTracking
-                ? controller.stopTracking
-                : controller.startTracking,
-            child: Text(
-              controller.isTracking ? 'Stop' : 'Start',
-              style: TextStyle(fontSize: buttonFontSize),
-            ),
+        // if (!controller.isTunnel || controller.isMoving)
+        ElevatedButton(
+          onPressed: controller.isTracking
+              ? controller.stopTracking
+              : controller.startTracking,
+          child: Text(
+            controller.isTracking ? 'Stop' : 'Start',
+            style: TextStyle(fontSize: buttonFontSize),
           ),
+        ),
         const SizedBox(height: 10),
-        if (!controller.isTracking && !controller.isTunnel)
-          ElevatedButton(
-            onPressed: () {
-              controller.stopTracking();
-              _showDialog(context, direction);
-            },
-            child: Text(
-              "Select Package",
-              style: TextStyle(fontSize: buttonFontSize),
-            ),
+        // if (!controller.isTracking && !controller.isTunnel)
+        ElevatedButton(
+          onPressed: () {
+            controller.stopTracking();
+            _showDialog(context, direction);
+          },
+          child: Text(
+            "Select Package",
+            style: TextStyle(fontSize: buttonFontSize),
           ),
+        ),
         const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -312,17 +323,9 @@ class RideView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             ElevatedButton(
-              onPressed: () {
-                isarr.storeRideCollection();
-              },
-              child: Text(
-                "Add History",
-                style: TextStyle(fontSize: buttonFontSize),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                isarr.readRideCollection();
+              onPressed: () async {
+                await isarServices.getRides();
+                Get.to(() => const HistoryView());
               },
               child: Text(
                 "Show History",
@@ -331,8 +334,8 @@ class RideView extends StatelessWidget {
             ),
           ],
         ),
-        if (isarr.readedCollections != null)
-          Text(isarr.readedCollections!.fare.toString()),
+        // if (isarr.readedCollections != null)
+        //   Text(isarr.readedCollections!.fare.toString()),
         // if (!controller.isTracking && !controller.isTunnel)
         // ElevatedButton(
         //   onPressed: () {

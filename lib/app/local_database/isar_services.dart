@@ -1,52 +1,58 @@
-import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:speed_meter_app/app/controllers/ride_controller.dart';
+import 'package:speed_meter_app/app/data/history_data.dart';
 import 'package:speed_meter_app/app/local_database/collections/ride_collection.dart';
 
 class IsarServices {
-  late Future<Isar> isardb;
-  RideController rideController = Get.put(RideController());
-  RideCollection? readedCollections;
+  static final IsarServices _instance = IsarServices._internal();
+  late Future<Isar> db;
 
-  IsarServices() {
-    isardb = _initIsar();
+  factory IsarServices() {
+    return _instance;
   }
 
-  Isar isar = IsarServices().isar;
+  IsarServices._internal() {
+    db = _initDb();
+  }
 
-  Future<Isar> _initIsar() async {
+  Future<Isar> _initDb() async {
+    if (Isar.instanceNames.isNotEmpty) {
+      // Return the already opened instance
+      return Future.value(Isar.getInstance());
+    }
+
     final dir = await getApplicationDocumentsDirectory();
-
     return await Isar.open(
       [RideCollectionSchema],
       directory: dir.path,
     );
   }
 
-  Future<void> storeRideCollection() async {
-    final rides = isar.rideCollections;
-    final newride = RideCollection(
-        userId: '001',
-        distance: rideController.totalDistance.toStringAsFixed(1),
-        fare: rideController.totalFare.toStringAsFixed(1),
-        packageType: 'S1',
-        status: "Completed",
-        tolls: rideController.tollsAmount.toStringAsFixed(1),
-        startTime: rideController.startTime.toString(),
-        endTime: rideController.endTime.toString(),
-        startLocation: rideController.startPosition.toString(),
-        endLocation: rideController.lastPosition.toString(),
-        duration: rideController.endTime);
-
+  Future<void> addRide(RideCollection ride) async {
+    final isar = await db;
     await isar.writeTxn(() async {
-      await rides.put(newride);
+      await isar.rideCollections.put(ride);
     });
   }
 
-  Future<void> readRideCollection() async {
-    final getRides = isar.rideCollections;
-    final getRCollections = await getRides.where().findAll();
-    readedCollections = getRCollections.first;
+  Future<List<RideCollection>> getRides() async {
+    final isar = await db;
+    final loadedRides = await isar.rideCollections.where().findAll();
+    rideCollectionsData = loadedRides;
+    return loadedRides;
+  }
+
+  Future<void> updateRide(RideCollection ride) async {
+    final isar = await db;
+    await isar.writeTxn(() async {
+      await isar.rideCollections.put(ride);
+    });
+  }
+
+  Future<void> deleteRide(int id) async {
+    final isar = await db;
+    await isar.writeTxn(() async {
+      await isar.rideCollections.delete(id);
+    });
   }
 }
