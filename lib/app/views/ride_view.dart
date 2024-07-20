@@ -169,7 +169,6 @@ class RideView extends StatelessWidget {
                     // if (!controller.isTracking && !controller.isTunnel)
                     ElevatedButton(
                       onPressed: () {
-                        controller.stopTracking();
                         _showDialog(context, direction);
                       },
                       child: Text(
@@ -284,7 +283,6 @@ class RideView extends StatelessWidget {
         // if (!controller.isTracking && !controller.isTunnel)
         ElevatedButton(
           onPressed: () {
-            controller.stopTracking();
             _showDialog(context, direction);
           },
           child: Text(
