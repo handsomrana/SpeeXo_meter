@@ -35,8 +35,10 @@ class RideController extends GetxController {
   Position? startPosition;
   double totalLocalDistance = 0.0;
   double totalStraightDistance = 0.0;
+  double totalStraightFare = 0.0;
   double totalLocalFare = 0.0;
   double localMovingFare = 0.0;
+  double straightMovingFare = 0.0;
   // Position? tunnelStartPosition;
   // Position? tunnelEndPosition;
   // double tunnelDistance = 0.0;
@@ -78,6 +80,8 @@ class RideController extends GetxController {
       totalStraightDistance = 0.0;
       totalLocalFare = 0.0;
       localMovingFare = 0.0;
+      straightMovingFare = 0.0;
+      totalStraightFare = 0.0;
       // tunnelTime = 0.0;
       // tunnelDistance = 0.0;
       // tunnelFare = 0.0;
@@ -265,6 +269,7 @@ class RideController extends GetxController {
     await savePositionToLocal();
     await getDistanceFromLocal();
     calculateLocalFare();
+    calculateStraightFare();
     await getStraightDistance();
     // print(totalDistance.toStringAsFixed(4));
     // print(totalLocalDistance.toStringAsFixed(4));
@@ -451,6 +456,16 @@ class RideController extends GetxController {
     waitingFare = waitingTime * waitingRate;
     totalLocalFare =
         tollsAmount + extraAmount + packageCost + waitingFare + localMovingFare;
+  }
+
+  void calculateStraightFare() {
+    straightMovingFare = totalStraightDistance * movingRate;
+    waitingFare = waitingTime * waitingRate;
+    totalStraightFare = tollsAmount +
+        extraAmount +
+        packageCost +
+        waitingFare +
+        straightMovingFare;
   }
 
   String calculateDuration(String start, String end) {

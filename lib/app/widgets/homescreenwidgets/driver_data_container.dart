@@ -28,24 +28,55 @@ class DriverDataWidgetContainer extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const CircleAvatar(
-                radius: 50.0,
-                backgroundImage: AssetImage('assets/images/driverimge.jpeg'),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "SOLUTION 1",
+                    style: GoogleFonts.kalam(
+                      fontSize: 20,
+                      color: darkMainColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Fare: \n ${controller.totalFare.toStringAsFixed(2)} \$',
+                    style: GoogleFonts.sairaCondensed(
+                      fontSize: 20,
+                      color: darkMainColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Distance: \n ${controller.totalDistance.toStringAsFixed(2)} km',
+                    style: GoogleFonts.sairaCondensed(
+                      fontSize: 15,
+                      color: darkMainColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const VerticalDivider(
+                color: Colors.black54,
+                thickness: 1,
+                width: 1,
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Fare: ${controller.totalLocalFare.toStringAsFixed(2)} km',
-                    style: GoogleFonts.sairaCondensed(
-                      fontSize: 30,
+                    "SOLUTION 2",
+                    style: GoogleFonts.kalam(
+                      fontSize: 20,
                       color: darkMainColor,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    'Distance: ${controller.totalDistance.toStringAsFixed(4)} km',
+                    'Local Fare: \n ${controller.totalLocalFare.toStringAsFixed(2)} \$',
                     style: GoogleFonts.sairaCondensed(
                       fontSize: 20,
                       color: darkMainColor,
@@ -53,7 +84,34 @@ class DriverDataWidgetContainer extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Local Distance: ${controller.totalLocalDistance.toStringAsFixed(4)} km',
+                    'Local Distance: \n ${controller.totalLocalDistance.toStringAsFixed(2)} km',
+                    style: GoogleFonts.sairaCondensed(
+                      fontSize: 15,
+                      color: darkMainColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const VerticalDivider(
+                color: Colors.black54,
+                thickness: 1,
+                width: 1,
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "SOLUTION 3",
+                    style: GoogleFonts.kalam(
+                      fontSize: 20,
+                      color: darkMainColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Straight Fare: \n ${controller.totalStraightFare.toStringAsFixed(2)} \$',
                     style: GoogleFonts.sairaCondensed(
                       fontSize: 20,
                       color: darkMainColor,
@@ -61,9 +119,9 @@ class DriverDataWidgetContainer extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Straight Distance: ${controller.totalStraightDistance.toStringAsFixed(4)} km',
+                    'Straight Distance: \n ${controller.totalStraightDistance.toStringAsFixed(2)} km',
                     style: GoogleFonts.sairaCondensed(
-                      fontSize: 20,
+                      fontSize: 15,
                       color: darkMainColor,
                       fontWeight: FontWeight.bold,
                     ),

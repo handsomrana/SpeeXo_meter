@@ -244,7 +244,7 @@ class RideView extends StatelessWidget {
           height: 20,
         ),
         Text(
-          'Distance: ${controller.totalDistance.toStringAsFixed(4)} km',
+          'Distance: ${controller.totalDistance.toStringAsFixed(1)} km',
           style: GoogleFonts.sairaCondensed(
             fontSize: 20,
             color: Colors.white.withOpacity(0.8),

@@ -24,7 +24,8 @@ class EndAlertDialogWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            "Do you want to end ride \n with total Fare of ${rideController.totalFare.toStringAsFixed(1)} \$ ",
+            // "Do you want to end ride \n with total Fare of ${rideController.totalFare.toStringAsFixed(1)} \$ ",
+            "Do you want to end ride ? ",
             style: GoogleFonts.sairaCondensed(
               color: Colors.white,
               fontSize: 20,
@@ -42,7 +43,7 @@ class EndAlertDialogWidget extends StatelessWidget {
             },
             style: elevatedButtonStyle,
             child: Text(
-              "End",
+              "Confrm",
               style: elevatdButtonTextstyle,
             ),
           ),

@@ -44,10 +44,13 @@ class HomeView extends StatelessWidget {
             return Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                DriverDataWidgetContainer(isTablet: isTablet),
-                const SizedBox(
-                  height: 4,
+                Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: DriverDataWidgetContainer(isTablet: isTablet),
                 ),
+                // const SizedBox(
+                //   height: 4,
+                // ),
                 const HomeScreenFirstButtonRow(),
                 const SizedBox(
                   height: 4,
