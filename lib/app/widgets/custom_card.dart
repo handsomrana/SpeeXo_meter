@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:speed_meter_app/utils/colors.dart';
 
 class CustomCard extends StatelessWidget {
   final String heading;
@@ -6,6 +7,7 @@ class CustomCard extends StatelessWidget {
   final String pricePerKm;
   final String waitingTime;
   final VoidCallback onTap;
+  final bool orientation;
 
   const CustomCard({
     super.key,
@@ -14,19 +16,22 @@ class CustomCard extends StatelessWidget {
     required this.pricePerKm,
     required this.waitingTime,
     required this.onTap,
+    required this.orientation,
   });
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Card(
+        color: lightGradientColor,
         elevation: 5,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(

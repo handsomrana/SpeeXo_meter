@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:speed_meter_app/app/local_database/collections/ride_collection.dart';
+import 'package:speed_meter_app/app/local_database/collections/tunnel_solution_collection.dart';
 import 'package:speed_meter_app/app/local_database/isar_services.dart';
 import 'dart:async';
 import 'package:speed_meter_app/utils/vacent_disatance.dart';
@@ -11,6 +13,7 @@ class RideController extends GetxController {
   double packageCost = 4.92;
   double movingRate = 2.29;
   double waitingRate = 0.01583;
+  var selectedPackage = 'DEFAULT'.obs;
   double extraAmount = 0.0;
   double tollsAmount = 0.0;
   // Position? tunnelTestingPosition;
@@ -22,12 +25,18 @@ class RideController extends GetxController {
   bool isPackage1 = false;
   bool isPackage2 = false;
   bool isPackage3 = false;
+  String startAddress = '';
+  String endAddress = '';
   double totalDistance = 0.0;
   double speed = 0.0;
   String startTime = '';
   String endTime = '';
   Position? lastPosition;
   Position? startPosition;
+  double totalLocalDistance = 0.0;
+  double totalStraightDistance = 0.0;
+  double totalLocalFare = 0.0;
+  double localMovingFare = 0.0;
   // Position? tunnelStartPosition;
   // Position? tunnelEndPosition;
   // double tunnelDistance = 0.0;
@@ -59,11 +68,16 @@ class RideController extends GetxController {
       tollsAmount = 0.0;
       startPosition = await Geolocator.getCurrentPosition();
       lastPosition = null;
+      await savePositionToLocal();
       waitingTime = 0;
       movingTime = 0;
       totalFare = 0.0;
       movingFare = 0.0;
       waitingFare = 0.0;
+      totalLocalDistance = 0.0;
+      totalStraightDistance = 0.0;
+      totalLocalFare = 0.0;
+      localMovingFare = 0.0;
       // tunnelTime = 0.0;
       // tunnelDistance = 0.0;
       // tunnelFare = 0.0;
@@ -90,6 +104,7 @@ class RideController extends GetxController {
           );
 
           if (currentSpeed >= 1) {
+            await savePositionToLocal();
             // isMoving = true;
             // movingTime += 1;
             totalDistance += distance / 1000;
@@ -102,8 +117,8 @@ class RideController extends GetxController {
           speed = currentSpeed;
           update();
         }
-        lastPosition = await Geolocator.getLastKnownPosition();
-        // lastPosition = position;
+        // lastPosition = await Geolocator.getLastKnownPosition();
+        lastPosition = position;
       });
 
       updateTimer = Timer.periodic(
@@ -247,23 +262,22 @@ class RideController extends GetxController {
   // }
 
   void stopTracking() async {
+    await savePositionToLocal();
+    await getDistanceFromLocal();
+    calculateLocalFare();
+    await getStraightDistance();
+    // print(totalDistance.toStringAsFixed(4));
+    // print(totalLocalDistance.toStringAsFixed(4));
     isTracking = false;
     endTime = DateTime.now().toString();
-    addRidetoLocal();
+    await getAddressFromCoordinates();
+    await addRidetoLocal();
     positionStreamSubscription?.cancel();
     updateTimer?.cancel();
     await isarServices.getRides();
+    await isarServices.deletePositions();
     update();
   }
-
-  // Future<void> tunnelPositionTesting() async {
-  //   Timer.periodic(const Duration(seconds: 1), (timer) async {
-  //     tunnelTestingPosition = await Geolocator.getCurrentPosition(
-  //       desiredAccuracy: LocationAccuracy.high,
-  //     );
-  //     update();
-  //   });
-  // }
 
   @override
   void onClose() {
@@ -308,9 +322,9 @@ class RideController extends GetxController {
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  void addRidetoLocal() async {
+  Future<void> addRidetoLocal() async {
     final newRide = RideCollection(
-        userId: '001',
+        driverId: '001',
         packageType: isPackage1
             ? "S1"
             : isPackage2
@@ -318,17 +332,101 @@ class RideController extends GetxController {
                 : isPackage3
                     ? "S3"
                     : "DEFAULT",
-        startLocation: startPosition.toString(),
-        endLocation: lastPosition.toString(),
+        startLocation: startAddress,
+        endLocation: endAddress,
         fare: totalFare.toStringAsFixed(1),
         distance: totalDistance.toStringAsFixed(1),
         duration: calculateDuration(startTime, endTime),
         startTime: startTime,
         endTime: endTime,
         tolls: tollsAmount.toStringAsFixed(1),
+        extra: extraAmount.toStringAsFixed(1),
         status: "COMPLETED");
 
     await isarServices.addRide(newRide);
+  }
+
+  Future<void> savePositionToLocal() async {
+    final tempcPosition = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.best,
+    );
+    final newPosition = TunnelSolutionCollection(
+      positionLatitude: tempcPosition.latitude,
+      positionLongitude: tempcPosition.longitude,
+      timeStamp: DateTime.now(),
+    );
+    await isarServices.addPosition(newPosition);
+  }
+
+  Future<void> getDistanceFromLocal() async {
+    final positions = await isarServices.getPositions();
+    double temDistance = 0.0;
+    if (positions.isNotEmpty) {
+      for (int i = 0; i < positions.length - 1; i++) {
+        final start = positions[i];
+        final end = positions[i + 1];
+
+        final distance = vincentyDistance(
+          start.positionLatitude,
+          start.positionLongitude,
+          end.positionLatitude,
+          end.positionLongitude,
+        );
+        temDistance += distance / 1000;
+      }
+      totalLocalDistance = temDistance;
+      update();
+    }
+  }
+
+  Future<void> getStraightDistance() async {
+    final positions = await isarServices.getPositions();
+    double temDistance = 0.0;
+    if (positions.isNotEmpty) {
+      final start = positions[0];
+      final end = positions[positions.length - 1];
+
+      final distance = vincentyDistance(
+        start.positionLatitude,
+        start.positionLongitude,
+        end.positionLatitude,
+        end.positionLongitude,
+      );
+      temDistance += distance / 1000;
+    }
+    totalStraightDistance = temDistance;
+    update();
+  }
+
+  Future<void> getAddressFromCoordinates() async {
+    if (startPosition != null && lastPosition != null) {
+      try {
+        await setLocaleIdentifier("en");
+        final List<Placemark> startPlacemarks = await placemarkFromCoordinates(
+          startPosition!.latitude,
+          startPosition!.longitude,
+        );
+        if (startPlacemarks.isNotEmpty) {
+          final Placemark startPlacemark = startPlacemarks.first;
+          startAddress =
+              '${startPlacemark.street}, ${startPlacemark.locality},${startPlacemark.subAdministrativeArea}, ${startPlacemark.administrativeArea}, ${startPlacemark.country}';
+        }
+
+        final List<Placemark> endPlacemarks = await placemarkFromCoordinates(
+          lastPosition!.latitude,
+          lastPosition!.longitude,
+        );
+        if (endPlacemarks.isNotEmpty) {
+          final Placemark endPlacemark = endPlacemarks.first;
+          endAddress =
+              '${endPlacemark.street}, ${endPlacemark.locality}, ${endPlacemark.administrativeArea}, ${endPlacemark.country}';
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error occurred while getting address: $e');
+        }
+      }
+    }
   }
 
   void addExtraAmount(double amount) {
@@ -348,6 +446,13 @@ class RideController extends GetxController {
         tollsAmount + extraAmount + packageCost + movingFare + waitingFare;
   }
 
+  void calculateLocalFare() {
+    localMovingFare = totalLocalDistance * movingRate;
+    waitingFare = waitingTime * waitingRate;
+    totalLocalFare =
+        tollsAmount + extraAmount + packageCost + waitingFare + localMovingFare;
+  }
+
   String calculateDuration(String start, String end) {
     if (start.isEmpty || end.isEmpty) return '';
     final DateTime startTime = DateTime.parse(start);
@@ -362,6 +467,7 @@ class RideController extends GetxController {
     movingRate = 2.29;
     packageCost = 4.92;
     isPackage1 = true;
+    selectedPackage.value = "S1 Package";
   }
 
   void setPackage2() {
@@ -369,6 +475,7 @@ class RideController extends GetxController {
     movingRate = 2.73;
     packageCost = 4.92;
     isPackage2 = true;
+    selectedPackage.value = "S2 Package";
   }
 
   void setPackage3() {
@@ -376,5 +483,6 @@ class RideController extends GetxController {
     movingRate = 2.73;
     packageCost = 7.42;
     isPackage3 = true;
+    selectedPackage.value = "S3 Package";
   }
 }

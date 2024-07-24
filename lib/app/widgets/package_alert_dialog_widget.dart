@@ -1,23 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:speed_meter_app/app/controllers/ride_controller.dart';
+import 'package:speed_meter_app/app/views/ride_view.dart';
 import 'package:speed_meter_app/app/widgets/custom_card.dart';
+import 'package:speed_meter_app/utils/colors.dart';
+import 'package:speed_meter_app/utils/styles.dart';
 
 class PackageAlertDialogWidget extends StatelessWidget {
   const PackageAlertDialogWidget({
     super.key,
     required this.rideController,
     required this.direction,
+    required this.orientation,
   });
 
   final RideController rideController;
   final Axis direction;
+  final bool orientation;
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Pick a Package'),
+      backgroundColor: lightMainColor,
+      title: Text(
+        'Pick a Package',
+        style: appBarTextStyle,
+        textAlign: TextAlign.center,
+      ),
       content: SizedBox(
-        width: double.maxFinite,
+        width: orientation
+            ? MediaQuery.of(context).size.width * 0.7
+            : MediaQuery.of(context).size.width,
+        height: orientation
+            ? MediaQuery.of(context).size.height * 0.8
+            : MediaQuery.of(context).size.height * 0.5,
         child: ListView(
           scrollDirection: direction,
           shrinkWrap: true,
@@ -27,37 +43,50 @@ class PackageAlertDialogWidget extends StatelessWidget {
                 startRate: "4.92",
                 pricePerKm: "2.29",
                 waitingTime: "0.95",
-                onTap: () {
+                orientation: orientation,
+                onTap: () async {
                   rideController.setPackage1();
+                  await rideController.startTracking();
                   Navigator.pop(context);
+                  Get.to(() => RideView());
                 }),
             CustomCard(
                 heading: "S2 Package",
                 startRate: "4.92",
                 pricePerKm: "2.73",
                 waitingTime: "0.95",
-                onTap: () {
+                orientation: orientation,
+                onTap: () async {
                   rideController.setPackage2();
+                  await rideController.startTracking();
                   Navigator.pop(context);
+                  Get.to(() => RideView());
                 }),
             CustomCard(
                 heading: "S3 Package",
                 startRate: "7.42",
                 pricePerKm: "2.73",
                 waitingTime: "0.95",
-                onTap: () {
+                orientation: orientation,
+                onTap: () async {
                   rideController.setPackage3();
+                  await rideController.startTracking();
                   Navigator.pop(context);
+                  Get.to(() => RideView());
                 }),
           ],
         ),
       ),
       actions: <Widget>[
-        TextButton(
+        ElevatedButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('Cancel'),
+          style: elevatedButtonStyle,
+          child: Text(
+            'Cancel',
+            style: elevatdButtonTextstyle,
+          ),
         ),
       ],
     );

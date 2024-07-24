@@ -4,7 +4,7 @@ part 'ride_collection.g.dart';
 @Collection()
 class RideCollection {
   RideCollection(
-      {required this.userId,
+      {required this.driverId,
       required this.packageType,
       required this.startLocation,
       required this.endLocation,
@@ -14,10 +14,11 @@ class RideCollection {
       required this.startTime,
       required this.endTime,
       required this.tolls,
+      required this.extra,
       required this.status});
 
   final Id rideId = Isar.autoIncrement;
-  final String userId;
+  final String driverId;
   final String packageType;
   final String fare;
   final String distance;
@@ -27,5 +28,6 @@ class RideCollection {
   final String startTime;
   final String endTime;
   final String tolls;
+  final String extra;
   final String status;
 }

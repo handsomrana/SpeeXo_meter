@@ -257,9 +257,10 @@ class NumPad extends StatelessWidget {
     return ElevatedButton(
       onPressed: () => controller.addDigit(digit),
       style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.grey.shade700,
-          shape: const CircleBorder(),
-          minimumSize: const Size(60, 60)),
+        backgroundColor: Colors.grey.shade700,
+        shape: const CircleBorder(),
+        minimumSize: const Size(60, 60),
+      ),
       child: Text(
         digit,
         style: const TextStyle(

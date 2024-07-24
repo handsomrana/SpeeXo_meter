@@ -2,6 +2,7 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:speed_meter_app/app/data/history_data.dart';
 import 'package:speed_meter_app/app/local_database/collections/ride_collection.dart';
+import 'package:speed_meter_app/app/local_database/collections/tunnel_solution_collection.dart';
 
 class IsarServices {
   static final IsarServices _instance = IsarServices._internal();
@@ -23,7 +24,10 @@ class IsarServices {
 
     final dir = await getApplicationDocumentsDirectory();
     return await Isar.open(
-      [RideCollectionSchema],
+      [
+        RideCollectionSchema,
+        TunnelSolutionCollectionSchema,
+      ],
       directory: dir.path,
     );
   }
@@ -53,6 +57,28 @@ class IsarServices {
     final isar = await db;
     await isar.writeTxn(() async {
       await isar.rideCollections.delete(id);
+    });
+  }
+
+  Future<void> addPosition(TunnelSolutionCollection position) async {
+    final isar = await db;
+    await isar.writeTxn(() async {
+      await isar.tunnelSolutionCollections.put(position);
+    });
+  }
+
+  Future<List<TunnelSolutionCollection>> getPositions() async {
+    final isar = await db;
+    final loadedPositions =
+        await isar.tunnelSolutionCollections.where().findAll();
+    return loadedPositions;
+  }
+
+  Future<void> deletePositions() async {
+    final isar = await db;
+
+    await isar.writeTxn(() async {
+      await isar.tunnelSolutionCollections.clear();
     });
   }
 }

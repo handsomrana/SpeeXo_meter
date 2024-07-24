@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:speed_meter_app/app/controllers/ride_controller.dart';
-import 'package:speed_meter_app/app/local_database/collections/ride_collection.dart';
 import 'package:speed_meter_app/app/local_database/isar_services.dart';
-import 'package:speed_meter_app/app/views/history_view.dart';
 import 'package:speed_meter_app/app/widgets/add_extra_widget.dart';
 import 'package:speed_meter_app/app/widgets/add_tolls_dialog.dart';
-import 'package:speed_meter_app/app/widgets/package_alert_dialog_widget.dart';
+import 'package:speed_meter_app/app/widgets/end_alert_dialog_widget.dart';
+import 'package:speed_meter_app/utils/styles.dart';
 
 // ignore: must_be_immutable
 class RideView extends StatelessWidget {
@@ -21,25 +21,6 @@ class RideView extends StatelessWidget {
     return DateFormat('yyyy-MM-dd – kk:mm').format(dateTime);
   }
 
-  String calculateDuration(String start, String end) {
-    if (start.isEmpty || end.isEmpty) return '';
-    final DateTime startTime = DateTime.parse(start);
-    final DateTime endTime = DateTime.parse(end);
-    final Duration duration = endTime.difference(startTime);
-    double totalMinutes = duration.inSeconds / 60.0;
-    return '${totalMinutes.toStringAsFixed(2)} minute';
-  }
-
-  void _showDialog(BuildContext context, Axis direction) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return PackageAlertDialogWidget(
-            rideController: rideController, direction: direction);
-      },
-    );
-  }
-
   void _showAddExtraDialog(BuildContext context, bool isTablet) {
     showDialog(
       context: context,
@@ -49,15 +30,23 @@ class RideView extends StatelessWidget {
     );
   }
 
-  void _showTollsDialog(BuildContext context) {
+  void _showTollsDialog(BuildContext context, bool isTablet) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AddTollsDialogWidget(
-            // rideController: rideController,
-            );
+          sizeFor: isTablet,
+        );
       },
     );
+  }
+
+  void showEndAlert(BuildContext context, bool isTablet) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return EndAlertDialogWidget(orientation: isTablet);
+        });
   }
 
   RideController rideController = Get.put(RideController());
@@ -65,14 +54,26 @@ class RideView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromRGBO(48, 49, 85, 1),
       appBar: AppBar(
-        title: const Text('Fare Tracker'),
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 67, 69, 118),
+        title: Obx(
+          () => Text(
+            rideController.selectedPackage.value,
+            style: GoogleFonts.kalam(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              fontSize: 30,
+            ),
+          ),
+        ),
         automaticallyImplyLeading: false,
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           bool isTablet = constraints.maxWidth >= 600;
-          double padding = isTablet ? 32.0 : 16.0;
+          double padding = isTablet ? 16.0 : 16.0;
           double fontSize = isTablet ? 24.0 : 16.0;
           double buttonFontSize = isTablet ? 20.0 : 16.0;
           Axis direction = isTablet ? Axis.horizontal : Axis.vertical;
@@ -116,71 +117,44 @@ class RideView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Image.asset(
-            "assets/images/map.jpeg",
+            "assets/images/map2.jpeg",
             fit: BoxFit.cover,
-            height: 400,
-            width: 300,
+            height: MediaQuery.of(context).size.height * 1,
+            width: MediaQuery.of(context).size.width * 0.5,
           ),
           const SizedBox(width: 20),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   'Fare: ${controller.totalFare.toStringAsFixed(1)} \$',
-                  style: TextStyle(
-                    fontSize: fontSize + 10,
-                    fontWeight: FontWeight.bold,
+                  style: GoogleFonts.blackOpsOne(
+                    fontSize: 40,
+                    color: Colors.white,
                   ),
                 ),
-                if (!controller.isTracking &&
-                    controller.endTime.isNotEmpty) ...[
-                  Text(
-                    'Duration: ${calculateDuration(controller.startTime, controller.endTime)}',
-                    style: TextStyle(fontSize: fontSize),
-                  ),
-                ],
+                const SizedBox(
+                  height: 20,
+                ),
                 Text(
                   'Distance: ${controller.totalDistance.toStringAsFixed(1)} km',
-                  style: TextStyle(
-                    fontSize: fontSize + 4,
+                  style: GoogleFonts.sairaCondensed(
+                    fontSize: 20,
+                    color: Colors.white.withOpacity(0.8),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
                   'Waiting Time: ${controller.getFormattedWaitingTime()} minutes',
-                  style: TextStyle(fontSize: fontSize),
+                  style: GoogleFonts.sairaCondensed(
+                    fontSize: 20,
+                    color: Colors.white.withOpacity(0.8),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                const SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    // if (!controller.isTunnel || controller.isMoving)
-                    ElevatedButton(
-                      onPressed: controller.isTracking
-                          ? controller.stopTracking
-                          : controller.startTracking,
-                      child: Text(
-                        controller.isTracking ? 'Stop' : 'Start',
-                        style: TextStyle(fontSize: buttonFontSize),
-                      ),
-                    ),
-                    // if (!controller.isTracking && !controller.isTunnel)
-                    ElevatedButton(
-                      onPressed: () {
-                        _showDialog(context, direction);
-                      },
-                      child: Text(
-                        "Select Package",
-                        style: TextStyle(fontSize: buttonFontSize),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -188,33 +162,48 @@ class RideView extends StatelessWidget {
                       onPressed: () {
                         _showAddExtraDialog(context, isTablet);
                       },
+                      style: elevatedButtonStyle,
                       child: Text(
                         "Add Extra",
-                        style: TextStyle(fontSize: buttonFontSize),
+                        style: elevatdButtonTextstyle,
                       ),
                     ),
                     ElevatedButton(
                       onPressed: () {
                         _showTollsDialog(
                           context,
+                          isTablet,
                         );
                       },
+                      style: elevatedButtonStyle,
                       child: Text(
                         "Add Tolls",
-                        style: TextStyle(fontSize: buttonFontSize),
+                        style: elevatdButtonTextstyle,
                       ),
                     ),
                   ],
                 ),
-                ElevatedButton(
-                  onPressed: () async {
-                    await isarServices.getRides();
-                    Get.to(() => const HistoryView());
-                  },
-                  child: Text(
-                    "Show History",
-                    style: TextStyle(fontSize: buttonFontSize),
-                  ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            showEndAlert(context, isTablet);
+                          },
+                          style: elevatedButtonStyle.copyWith(),
+                          child: Text(
+                            "End Ride",
+                            style: elevatdButtonTextstyle,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -232,65 +221,45 @@ class RideView extends StatelessWidget {
       Axis direction,
       bool isTablet) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Image.asset(
-          "assets/images/map.jpeg",
+          "assets/images/map2.jpeg",
           fit: BoxFit.cover,
           height: 200,
           width: double.maxFinite,
         ),
-        if (!controller.isTracking && controller.endTime.isNotEmpty) ...[
-          Text(
-            'Duration: ${calculateDuration(controller.startTime, controller.endTime)}',
-            style: TextStyle(fontSize: fontSize),
-          ),
-        ],
-        Text(
-          'Distance: ${controller.totalDistance.toStringAsFixed(1)} km',
-          style: TextStyle(
-            fontSize: fontSize + 4,
-            fontWeight: FontWeight.bold,
-          ),
+        const SizedBox(
+          height: 20,
         ),
         Text(
           'Fare: ${controller.totalFare.toStringAsFixed(1)} \$',
-          style: TextStyle(
-            fontSize: fontSize + 4,
-            fontWeight: FontWeight.bold,
+          style: GoogleFonts.blackOpsOne(
+            fontSize: 40,
+            color: Colors.white,
           ),
         ),
         const SizedBox(
-          height: 10,
+          height: 20,
         ),
         Text(
+          'Distance: ${controller.totalDistance.toStringAsFixed(4)} km',
+          style: GoogleFonts.sairaCondensed(
+            fontSize: 20,
+            color: Colors.white.withOpacity(0.8),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
+        Text(
           'Waiting Time: ${controller.getFormattedWaitingTime()} minutes',
-          style: TextStyle(fontSize: fontSize),
-        ),
-        const SizedBox(height: 20),
-        // if (!controller.isTunnel || controller.isMoving)
-        ElevatedButton(
-          onPressed: controller.isTracking
-              ? controller.stopTracking
-              : controller.startTracking,
-          child: Text(
-            controller.isTracking ? 'Stop' : 'Start',
-            style: TextStyle(fontSize: buttonFontSize),
+          style: GoogleFonts.sairaCondensed(
+            fontSize: 20,
+            color: Colors.white.withOpacity(0.8),
           ),
         ),
-        const SizedBox(height: 10),
-        // if (!controller.isTracking && !controller.isTunnel)
-        ElevatedButton(
-          onPressed: () {
-            _showDialog(context, direction);
-          },
-          child: Text(
-            "Select Package",
-            style: TextStyle(fontSize: buttonFontSize),
-          ),
-        ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 30),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -298,57 +267,56 @@ class RideView extends StatelessWidget {
               onPressed: () {
                 _showAddExtraDialog(context, isTablet);
               },
+              style: elevatedButtonStyle,
               child: Text(
                 "Add Extra",
-                style: TextStyle(fontSize: buttonFontSize),
+                style: elevatdButtonTextstyle,
               ),
             ),
             ElevatedButton(
               onPressed: () {
                 _showTollsDialog(
                   context,
+                  isTablet,
                 );
               },
+              style: elevatedButtonStyle,
               child: Text(
                 "Add Tolls",
-                style: TextStyle(fontSize: buttonFontSize),
+                style: elevatdButtonTextstyle,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 20),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            ElevatedButton(
-              onPressed: () async {
-                await isarServices.getRides();
-                Get.to(() => const HistoryView());
-              },
-              child: Text(
-                "Show History",
-                style: TextStyle(fontSize: buttonFontSize),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: ElevatedButton(
+                  onPressed: () {
+                    showEndAlert(context, isTablet);
+                  },
+                  style: elevatedButtonStyle.copyWith(),
+                  child: Text(
+                    "End Ride",
+                    style: elevatdButtonTextstyle,
+                  ),
+                ),
               ),
             ),
           ],
         ),
-        // if (isarr.readedCollections != null)
-        //   Text(isarr.readedCollections!.fare.toString()),
-        // if (!controller.isTracking && !controller.isTunnel)
         // ElevatedButton(
-        //   onPressed: () {
-        //     if (controller.isTunnel) {
-        //       controller.onResumeTracking();
-        //     } else {
-        //       controller.onPauseTracking();
-        //     }
-        //   },
+        //   onPressed: controller.isTracking
+        //       ? controller.stopTracking
+        //       : controller.startTracking,
         //   child: Text(
-        //     controller.isTunnel ? "End Tunnel" : "Start Tunnel",
+        //     controller.isTracking ? 'Stop' : 'Start',
         //     style: TextStyle(fontSize: buttonFontSize),
         //   ),
         // ),
-        // const SizedBox(height: 10),
       ],
     );
   }

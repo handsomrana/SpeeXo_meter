@@ -22,54 +22,59 @@ const RideCollectionSchema = CollectionSchema(
       name: r'distance',
       type: IsarType.string,
     ),
-    r'duration': PropertySchema(
+    r'driverId': PropertySchema(
       id: 1,
+      name: r'driverId',
+      type: IsarType.string,
+    ),
+    r'duration': PropertySchema(
+      id: 2,
       name: r'duration',
       type: IsarType.string,
     ),
     r'endLocation': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'endLocation',
       type: IsarType.string,
     ),
     r'endTime': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'endTime',
       type: IsarType.string,
     ),
+    r'extra': PropertySchema(
+      id: 5,
+      name: r'extra',
+      type: IsarType.string,
+    ),
     r'fare': PropertySchema(
-      id: 4,
+      id: 6,
       name: r'fare',
       type: IsarType.string,
     ),
     r'packageType': PropertySchema(
-      id: 5,
+      id: 7,
       name: r'packageType',
       type: IsarType.string,
     ),
     r'startLocation': PropertySchema(
-      id: 6,
+      id: 8,
       name: r'startLocation',
       type: IsarType.string,
     ),
     r'startTime': PropertySchema(
-      id: 7,
+      id: 9,
       name: r'startTime',
       type: IsarType.string,
     ),
     r'status': PropertySchema(
-      id: 8,
+      id: 10,
       name: r'status',
       type: IsarType.string,
     ),
     r'tolls': PropertySchema(
-      id: 9,
+      id: 11,
       name: r'tolls',
-      type: IsarType.string,
-    ),
-    r'userId': PropertySchema(
-      id: 10,
-      name: r'userId',
       type: IsarType.string,
     )
   },
@@ -94,16 +99,17 @@ int _rideCollectionEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.distance.length * 3;
+  bytesCount += 3 + object.driverId.length * 3;
   bytesCount += 3 + object.duration.length * 3;
   bytesCount += 3 + object.endLocation.length * 3;
   bytesCount += 3 + object.endTime.length * 3;
+  bytesCount += 3 + object.extra.length * 3;
   bytesCount += 3 + object.fare.length * 3;
   bytesCount += 3 + object.packageType.length * 3;
   bytesCount += 3 + object.startLocation.length * 3;
   bytesCount += 3 + object.startTime.length * 3;
   bytesCount += 3 + object.status.length * 3;
   bytesCount += 3 + object.tolls.length * 3;
-  bytesCount += 3 + object.userId.length * 3;
   return bytesCount;
 }
 
@@ -114,16 +120,17 @@ void _rideCollectionSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.distance);
-  writer.writeString(offsets[1], object.duration);
-  writer.writeString(offsets[2], object.endLocation);
-  writer.writeString(offsets[3], object.endTime);
-  writer.writeString(offsets[4], object.fare);
-  writer.writeString(offsets[5], object.packageType);
-  writer.writeString(offsets[6], object.startLocation);
-  writer.writeString(offsets[7], object.startTime);
-  writer.writeString(offsets[8], object.status);
-  writer.writeString(offsets[9], object.tolls);
-  writer.writeString(offsets[10], object.userId);
+  writer.writeString(offsets[1], object.driverId);
+  writer.writeString(offsets[2], object.duration);
+  writer.writeString(offsets[3], object.endLocation);
+  writer.writeString(offsets[4], object.endTime);
+  writer.writeString(offsets[5], object.extra);
+  writer.writeString(offsets[6], object.fare);
+  writer.writeString(offsets[7], object.packageType);
+  writer.writeString(offsets[8], object.startLocation);
+  writer.writeString(offsets[9], object.startTime);
+  writer.writeString(offsets[10], object.status);
+  writer.writeString(offsets[11], object.tolls);
 }
 
 RideCollection _rideCollectionDeserialize(
@@ -134,16 +141,17 @@ RideCollection _rideCollectionDeserialize(
 ) {
   final object = RideCollection(
     distance: reader.readString(offsets[0]),
-    duration: reader.readString(offsets[1]),
-    endLocation: reader.readString(offsets[2]),
-    endTime: reader.readString(offsets[3]),
-    fare: reader.readString(offsets[4]),
-    packageType: reader.readString(offsets[5]),
-    startLocation: reader.readString(offsets[6]),
-    startTime: reader.readString(offsets[7]),
-    status: reader.readString(offsets[8]),
-    tolls: reader.readString(offsets[9]),
-    userId: reader.readString(offsets[10]),
+    driverId: reader.readString(offsets[1]),
+    duration: reader.readString(offsets[2]),
+    endLocation: reader.readString(offsets[3]),
+    endTime: reader.readString(offsets[4]),
+    extra: reader.readString(offsets[5]),
+    fare: reader.readString(offsets[6]),
+    packageType: reader.readString(offsets[7]),
+    startLocation: reader.readString(offsets[8]),
+    startTime: reader.readString(offsets[9]),
+    status: reader.readString(offsets[10]),
+    tolls: reader.readString(offsets[11]),
   );
   return object;
 }
@@ -176,6 +184,8 @@ P _rideCollectionDeserializeProp<P>(
     case 9:
       return (reader.readString(offset)) as P;
     case 10:
+      return (reader.readString(offset)) as P;
+    case 11:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -405,6 +415,142 @@ extension RideCollectionQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'distance',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      driverIdEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'driverId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      driverIdGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'driverId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      driverIdLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'driverId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      driverIdBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'driverId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      driverIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'driverId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      driverIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'driverId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      driverIdContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'driverId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      driverIdMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'driverId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      driverIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'driverId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      driverIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'driverId',
         value: '',
       ));
     });
@@ -813,6 +959,142 @@ extension RideCollectionQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'endTime',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      extraEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'extra',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      extraGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'extra',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      extraLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'extra',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      extraBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'extra',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      extraStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'extra',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      extraEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'extra',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      extraContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'extra',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      extraMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'extra',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      extraIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'extra',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
+      extraIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'extra',
         value: '',
       ));
     });
@@ -1689,142 +1971,6 @@ extension RideCollectionQueryFilter
       ));
     });
   }
-
-  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
-      userIdEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'userId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
-      userIdGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'userId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
-      userIdLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'userId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
-      userIdBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'userId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
-      userIdStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'userId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
-      userIdEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'userId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
-      userIdContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'userId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
-      userIdMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'userId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
-      userIdIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'userId',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<RideCollection, RideCollection, QAfterFilterCondition>
-      userIdIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'userId',
-        value: '',
-      ));
-    });
-  }
 }
 
 extension RideCollectionQueryObject
@@ -1845,6 +1991,19 @@ extension RideCollectionQuerySortBy
       sortByDistanceDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'distance', Sort.desc);
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterSortBy> sortByDriverId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'driverId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterSortBy>
+      sortByDriverIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'driverId', Sort.desc);
     });
   }
 
@@ -1885,6 +2044,18 @@ extension RideCollectionQuerySortBy
       sortByEndTimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'endTime', Sort.desc);
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterSortBy> sortByExtra() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'extra', Sort.asc);
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterSortBy> sortByExtraDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'extra', Sort.desc);
     });
   }
 
@@ -1965,19 +2136,6 @@ extension RideCollectionQuerySortBy
       return query.addSortBy(r'tolls', Sort.desc);
     });
   }
-
-  QueryBuilder<RideCollection, RideCollection, QAfterSortBy> sortByUserId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'userId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<RideCollection, RideCollection, QAfterSortBy>
-      sortByUserIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'userId', Sort.desc);
-    });
-  }
 }
 
 extension RideCollectionQuerySortThenBy
@@ -1992,6 +2150,19 @@ extension RideCollectionQuerySortThenBy
       thenByDistanceDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'distance', Sort.desc);
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterSortBy> thenByDriverId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'driverId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterSortBy>
+      thenByDriverIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'driverId', Sort.desc);
     });
   }
 
@@ -2032,6 +2203,18 @@ extension RideCollectionQuerySortThenBy
       thenByEndTimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'endTime', Sort.desc);
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterSortBy> thenByExtra() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'extra', Sort.asc);
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QAfterSortBy> thenByExtraDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'extra', Sort.desc);
     });
   }
 
@@ -2125,19 +2308,6 @@ extension RideCollectionQuerySortThenBy
       return query.addSortBy(r'tolls', Sort.desc);
     });
   }
-
-  QueryBuilder<RideCollection, RideCollection, QAfterSortBy> thenByUserId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'userId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<RideCollection, RideCollection, QAfterSortBy>
-      thenByUserIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'userId', Sort.desc);
-    });
-  }
 }
 
 extension RideCollectionQueryWhereDistinct
@@ -2146,6 +2316,13 @@ extension RideCollectionQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'distance', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QDistinct> distinctByDriverId(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'driverId', caseSensitive: caseSensitive);
     });
   }
 
@@ -2167,6 +2344,13 @@ extension RideCollectionQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'endTime', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<RideCollection, RideCollection, QDistinct> distinctByExtra(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'extra', caseSensitive: caseSensitive);
     });
   }
 
@@ -2212,13 +2396,6 @@ extension RideCollectionQueryWhereDistinct
       return query.addDistinctBy(r'tolls', caseSensitive: caseSensitive);
     });
   }
-
-  QueryBuilder<RideCollection, RideCollection, QDistinct> distinctByUserId(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'userId', caseSensitive: caseSensitive);
-    });
-  }
 }
 
 extension RideCollectionQueryProperty
@@ -2232,6 +2409,12 @@ extension RideCollectionQueryProperty
   QueryBuilder<RideCollection, String, QQueryOperations> distanceProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'distance');
+    });
+  }
+
+  QueryBuilder<RideCollection, String, QQueryOperations> driverIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'driverId');
     });
   }
 
@@ -2250,6 +2433,12 @@ extension RideCollectionQueryProperty
   QueryBuilder<RideCollection, String, QQueryOperations> endTimeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'endTime');
+    });
+  }
+
+  QueryBuilder<RideCollection, String, QQueryOperations> extraProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'extra');
     });
   }
 
@@ -2287,12 +2476,6 @@ extension RideCollectionQueryProperty
   QueryBuilder<RideCollection, String, QQueryOperations> tollsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'tolls');
-    });
-  }
-
-  QueryBuilder<RideCollection, String, QQueryOperations> userIdProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'userId');
     });
   }
 }

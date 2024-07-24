@@ -5,15 +5,15 @@ import 'package:speed_meter_app/app/models/tolls_model.dart';
 class TollController extends GetxController {
   RideController rideController = Get.put(RideController());
 
-  var tolls = <Toll>[
-    Toll(name: "Harbour Bridge", price: 4.00),
-    Toll(name: "Airport Fee", price: 5.45),
-    Toll(name: "EASTERN DISTRIBUTOR", price: 9.29),
-    Toll(name: "WESTCONNEX-M4-MB LINK", price: 5.65),
-    Toll(name: "CROSSCITY TUNNEL", price: 6.77),
-    Toll(name: "LANECOVE TUNNEL", price: 3.93),
-    Toll(name: "M5 SOUTH WEST MOTORWAY", price: 5.54),
-    Toll(name: "WESTCONNEX-M5 EAST", price: 7.98),
+  var tolls = <TollModel>[
+    TollModel(name: "Harbour Bridge", price: 4.00),
+    TollModel(name: "Airport Fee", price: 5.45),
+    TollModel(name: "EASTERN DISTRIBUTOR", price: 9.29),
+    TollModel(name: "WESTCONNEX-M4-MB LINK", price: 5.65),
+    TollModel(name: "CROSSCITY TUNNEL", price: 6.77),
+    TollModel(name: "LANECOVE TUNNEL", price: 3.93),
+    TollModel(name: "M5 SOUTH WEST MOTORWAY", price: 5.54),
+    TollModel(name: "WESTCONNEX-M5 EAST", price: 7.98),
   ].obs;
 
   double get totalToll => tolls
@@ -22,6 +22,17 @@ class TollController extends GetxController {
 
   void toggleTollSelection(int index) {
     tolls[index].isSelected = !tolls[index].isSelected;
+    tolls.refresh();
+  }
+
+  void addNewToll(String tollName, String tollPrice) {
+    final tPrice = double.parse(tollPrice);
+    final newToll = TollModel(
+      name: tollName,
+      price: tPrice,
+      isSelected: false,
+    );
+    tolls.value.add(newToll);
     tolls.refresh();
   }
 

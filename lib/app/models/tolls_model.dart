@@ -1,7 +1,7 @@
-class Toll {
+class TollModel {
   String name;
   double price;
   bool isSelected;
 
-  Toll({required this.name, required this.price, this.isSelected = false});
+  TollModel({required this.name, required this.price, this.isSelected = false});
 }
