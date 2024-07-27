@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
@@ -7,7 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:speed_meter_app/app/local_database/collections/tunnel_solution_collection.dart';
 import 'package:speed_meter_app/utils/vacent_disatance.dart';
 
-class TaxiFareController extends GetxController {
+class ManualRideController extends GetxController {
   double packageCost = 4.92;
   double movingRate = 2.29;
   double waitingRate = 0.01583;
@@ -31,44 +30,6 @@ class TaxiFareController extends GetxController {
     super.onInit();
     // startTracking();
   }
-
-  // void startTracking() {
-  //   isTracking.value = true;
-  //   positionStream = Geolocator.getPositionStream(
-  //     locationSettings: const LocationSettings(
-  //       accuracy: LocationAccuracy.bestForNavigation,
-  //       distanceFilter: 10,
-  //     ),
-  //   ).listen((Position position) {
-  //     final newPosition = LatLng(position.latitude, position.longitude);
-  //     currentPosition.value = newPosition;
-  //     positions.add(TunnelSolutionCollection(
-  //       positionLatitude: position.latitude,
-  //       positionLongitude: position.longitude,
-  //       timeStamp: DateTime.now(),
-  //     ));
-  //     markers.add(
-  //       Marker(
-  //         markerId: MarkerId(newPosition.toString()),
-  //         position: newPosition,
-  //       ),
-  //     );
-  //     if (positions.length > 1) {
-  //       polylines.add(
-  //         Polyline(
-  //           polylineId: PolylineId(newPosition.toString()),
-  //           points: positions
-  //               .map((pos) =>
-  //                   LatLng(pos.positionLatitude, pos.positionLongitude))
-  //               .toList(),
-  //           color: Colors.blue,
-  //           width: 5,
-  //         ),
-  //       );
-  //     }
-  //     calculateFare();
-  //   });
-  // }
 
   void startTracking() async {
     isTracking.value = true;
