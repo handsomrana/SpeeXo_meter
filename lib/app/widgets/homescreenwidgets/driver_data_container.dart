@@ -33,7 +33,7 @@ class DriverDataWidgetContainer extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "SOLUTION 1",
+                    'SOLUTION 1',
                     style: GoogleFonts.kalam(
                       fontSize: 20,
                       color: darkMainColor,
@@ -41,7 +41,7 @@ class DriverDataWidgetContainer extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Fare: \n ${controller.totalFare.toStringAsFixed(2)} \$',
+                    'Geo Fare: \n ${controller.totalFare.toStringAsFixed(2)} \$',
                     style: GoogleFonts.sairaCondensed(
                       fontSize: 20,
                       color: darkMainColor,
@@ -103,7 +103,7 @@ class DriverDataWidgetContainer extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "SOLUTION 3",
+                    'SOLUTION 3',
                     style: GoogleFonts.kalam(
                       fontSize: 20,
                       color: darkMainColor,
@@ -111,7 +111,7 @@ class DriverDataWidgetContainer extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Straight Fare: \n ${controller.totalStraightFare.toStringAsFixed(2)} \$',
+                    'Location Fare: \n ${controller.totalStraightFare.toStringAsFixed(2)}',
                     style: GoogleFonts.sairaCondensed(
                       fontSize: 20,
                       color: darkMainColor,
@@ -119,7 +119,7 @@ class DriverDataWidgetContainer extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Straight Distance: \n ${controller.totalStraightDistance.toStringAsFixed(2)} km',
+                    'Distance: \n ${controller.totalStraightDistance.toStringAsFixed(2)} ',
                     style: GoogleFonts.sairaCondensed(
                       fontSize: 15,
                       color: darkMainColor,

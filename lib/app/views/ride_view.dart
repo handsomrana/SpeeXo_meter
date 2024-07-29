@@ -8,6 +8,7 @@ import 'package:speed_meter_app/app/widgets/add_extra_widget.dart';
 import 'package:speed_meter_app/app/widgets/add_tolls_dialog.dart';
 import 'package:speed_meter_app/app/widgets/end_alert_dialog_widget.dart';
 import 'package:speed_meter_app/utils/styles.dart';
+import 'package:speed_meter_app/utils/colors.dart';
 
 // ignore: must_be_immutable
 class RideView extends StatelessWidget {
@@ -154,6 +155,30 @@ class RideView extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                Text(
+                  'Testing',
+                  style: GoogleFonts.kalam(
+                    fontSize: 20,
+                    color: darkMainColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Geolocator: \n ${controller.geolocatorTestPosition.toString()}',
+                  style: GoogleFonts.sairaCondensed(
+                    fontSize: 20,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Location P: \n ${controller.locationTestPosition.toString()} ',
+                  style: GoogleFonts.sairaCondensed(
+                    fontSize: 20,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -260,6 +285,30 @@ class RideView extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 30),
+        Text(
+          'Testing',
+          style: GoogleFonts.kalam(
+            fontSize: 20,
+            color: darkMainColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          'Geolocator: \n ${controller.geolocatorTestPosition.toString()}',
+          style: GoogleFonts.sairaCondensed(
+            fontSize: 18,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          'Location P: \n ${controller.locationTestPosition.toString()} ',
+          style: GoogleFonts.sairaCondensed(
+            fontSize: 18,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [

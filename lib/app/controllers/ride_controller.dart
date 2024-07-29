@@ -7,9 +7,11 @@ import 'package:speed_meter_app/app/local_database/collections/tunnel_solution_c
 import 'package:speed_meter_app/app/local_database/isar_services.dart';
 import 'dart:async';
 import 'package:speed_meter_app/utils/vacent_disatance.dart';
+import 'package:location/location.dart' as loc;
 
 class RideController extends GetxController {
   final IsarServices isarServices = IsarServices();
+  loc.Location location = loc.Location();
   double packageCost = 4.92;
   double movingRate = 2.29;
   double waitingRate = 0.01583;
@@ -39,7 +41,9 @@ class RideController extends GetxController {
   double totalLocalFare = 0.0;
   double localMovingFare = 0.0;
   double straightMovingFare = 0.0;
-  // Position? tunnelStartPosition;
+  Position? geolocatorTestPosition;
+  loc.LocationData? locationTestPosition;
+  final positions = <TunnelSolutionCollection>[].obs;
   // Position? tunnelEndPosition;
   // double tunnelDistance = 0.0;
   // double tunnelFare = 0.0;
@@ -82,6 +86,8 @@ class RideController extends GetxController {
       localMovingFare = 0.0;
       straightMovingFare = 0.0;
       totalStraightFare = 0.0;
+      locationTestPosition = await location.getLocation();
+      geolocatorTestPosition = await Geolocator.getCurrentPosition();
       // tunnelTime = 0.0;
       // tunnelDistance = 0.0;
       // tunnelFare = 0.0;
@@ -108,7 +114,6 @@ class RideController extends GetxController {
           );
 
           if (currentSpeed >= 1) {
-            await savePositionToLocal();
             // isMoving = true;
             // movingTime += 1;
             totalDistance += distance / 1000;
@@ -128,6 +133,18 @@ class RideController extends GetxController {
       updateTimer = Timer.periodic(
         const Duration(seconds: 1),
         (timer) async {
+          await savePositionToLocal();
+          locationTestPosition = await location.getLocation();
+          final tloc = await Geolocator.getCurrentPosition();
+          geolocatorTestPosition = tloc;
+          if (!tloc.isMocked) {
+            positions.add(TunnelSolutionCollection(
+              positionLatitude: tloc.latitude,
+              positionLongitude: tloc.longitude,
+              timeStamp: DateTime.now(),
+            ));
+          }
+
           if (isTracking) {
             if (speed < 25) {
               isMoving = false;
@@ -136,6 +153,7 @@ class RideController extends GetxController {
               isMoving = true;
               movingTime += 1;
             }
+
             calculateFare();
             update();
           }
@@ -268,9 +286,10 @@ class RideController extends GetxController {
   void stopTracking() async {
     await savePositionToLocal();
     await getDistanceFromLocal();
+    await getStraightDistance();
     calculateLocalFare();
     calculateStraightFare();
-    await getStraightDistance();
+    positions.value = [];
     // print(totalDistance.toStringAsFixed(4));
     // print(totalLocalDistance.toStringAsFixed(4));
     isTracking = false;
@@ -355,6 +374,7 @@ class RideController extends GetxController {
     final tempcPosition = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.best,
     );
+    if (!tempcPosition.isMocked) {}
     final newPosition = TunnelSolutionCollection(
       positionLatitude: tempcPosition.latitude,
       positionLongitude: tempcPosition.longitude,
@@ -370,6 +390,39 @@ class RideController extends GetxController {
       for (int i = 0; i < positions.length - 1; i++) {
         final start = positions[i];
         final end = positions[i + 1];
+        if (start.positionLatitude == end.positionLatitude &&
+            start.positionLongitude == end.positionLongitude) {
+          continue;
+        }
+        if (start.positionLatitude == 0.0 &&
+            start.positionLongitude == 0.0 &&
+            end.positionLatitude == 0.0 &&
+            end.positionLongitude == 0.0) {
+          continue;
+        }
+
+        final distance = vincentyDistance(
+          start.positionLatitude,
+          start.positionLongitude,
+          end.positionLatitude,
+          end.positionLongitude,
+        );
+        if (distance > 2) {
+          temDistance += distance / 1000;
+        }
+      }
+      totalLocalDistance = temDistance;
+      update();
+    }
+  }
+
+  Future<void> getStraightDistance() async {
+    final position = positions;
+    double temDistance = 0.0;
+    if (position.isNotEmpty) {
+      for (int i = 0; i < position.length - 1; i++) {
+        final start = position[i];
+        final end = position[i + 1];
 
         final distance = vincentyDistance(
           start.positionLatitude,
@@ -379,28 +432,9 @@ class RideController extends GetxController {
         );
         temDistance += distance / 1000;
       }
-      totalLocalDistance = temDistance;
+      totalStraightDistance = temDistance;
       update();
     }
-  }
-
-  Future<void> getStraightDistance() async {
-    final positions = await isarServices.getPositions();
-    double temDistance = 0.0;
-    if (positions.isNotEmpty) {
-      final start = positions[0];
-      final end = positions[positions.length - 1];
-
-      final distance = vincentyDistance(
-        start.positionLatitude,
-        start.positionLongitude,
-        end.positionLatitude,
-        end.positionLongitude,
-      );
-      temDistance += distance / 1000;
-    }
-    totalStraightDistance = temDistance;
-    update();
   }
 
   Future<void> getAddressFromCoordinates() async {
