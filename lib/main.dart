@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:speed_meter_app/app/local_database/isar_services.dart';
 import 'package:speed_meter_app/app/views/home_view.dart';
 import 'package:speed_meter_app/app/views/login_view.dart';
+import 'package:speed_meter_app/app/views/mz_ride_view.dart';
 import 'package:speed_meter_app/app/widgets/ride_overlay_widget.dart';
 
 void main() async {
@@ -37,7 +38,7 @@ class CarRentalApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomeView(),
+      home: MzRideView(),
       getPages: [
         GetPage(name: '/login', page: () => LoginView()),
         GetPage(name: '/home', page: () => HomeView()),

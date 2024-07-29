@@ -13,6 +13,10 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_BIND"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_..." /> 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+     <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyA6jTV3zOroYu4Go5G5zsRhi2-9WD6HYiM"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    
     <application
         android:label="speed_meter_app"
         android:name="${applicationName}"
