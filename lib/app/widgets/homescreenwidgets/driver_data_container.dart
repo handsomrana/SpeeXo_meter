@@ -41,7 +41,7 @@ class DriverDataWidgetContainer extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Geo Fare: \n ${controller.totalFare.toStringAsFixed(2)} \$',
+                    'Geo Fare: \n ${controller.newStreamFare.toStringAsFixed(2)} \$',
                     style: GoogleFonts.sairaCondensed(
                       fontSize: 20,
                       color: darkMainColor,
@@ -49,7 +49,7 @@ class DriverDataWidgetContainer extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Distance: \n ${controller.totalDistance.toStringAsFixed(2)} km',
+                    'Distance: \n ${controller.totalStreamDistance.toStringAsFixed(2)} km',
                     style: GoogleFonts.sairaCondensed(
                       fontSize: 15,
                       color: darkMainColor,

@@ -129,8 +129,16 @@ class RideView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                if (controller.isTunnel)
+                  Text(
+                    'Tunnel Detected',
+                    style: GoogleFonts.blackOpsOne(
+                      fontSize: 40,
+                      color: Colors.white,
+                    ),
+                  ),
                 Text(
-                  'Fare: ${controller.totalFare.toStringAsFixed(1)} \$',
+                  'Fare: ${controller.newStreamFare.toStringAsFixed(1)} \$',
                   style: GoogleFonts.blackOpsOne(
                     fontSize: 40,
                     color: Colors.white,
@@ -140,7 +148,7 @@ class RideView extends StatelessWidget {
                   height: 20,
                 ),
                 Text(
-                  'Distance: ${controller.totalDistance.toStringAsFixed(1)} km',
+                  'Distance: ${controller.totalStreamDistance.toStringAsFixed(1)} km',
                   style: GoogleFonts.sairaCondensed(
                     fontSize: 20,
                     color: Colors.white.withOpacity(0.8),
@@ -165,14 +173,6 @@ class RideView extends StatelessWidget {
                 ),
                 Text(
                   'Geolocator: \n ${controller.geolocatorTestPosition.toString()}',
-                  style: GoogleFonts.sairaCondensed(
-                    fontSize: 20,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'Location P: \n ${controller.locationTestPosition.toString()} ',
                   style: GoogleFonts.sairaCondensed(
                     fontSize: 20,
                     color: Colors.white,
@@ -258,8 +258,16 @@ class RideView extends StatelessWidget {
         const SizedBox(
           height: 20,
         ),
+        if (controller.isTunnel)
+          Text(
+            'Tunnel Detected',
+            style: GoogleFonts.blackOpsOne(
+              fontSize: 40,
+              color: Colors.white,
+            ),
+          ),
         Text(
-          'Fare: ${controller.totalFare.toStringAsFixed(1)} \$',
+          'Fare: ${controller.newStreamFare.toStringAsFixed(1)} \$',
           style: GoogleFonts.blackOpsOne(
             fontSize: 40,
             color: Colors.white,
@@ -269,7 +277,7 @@ class RideView extends StatelessWidget {
           height: 20,
         ),
         Text(
-          'Distance: ${controller.totalDistance.toStringAsFixed(1)} km',
+          'Distance: ${controller.totalStreamDistance.toStringAsFixed(1)} km',
           style: GoogleFonts.sairaCondensed(
             fontSize: 20,
             color: Colors.white.withOpacity(0.8),
@@ -295,14 +303,6 @@ class RideView extends StatelessWidget {
         ),
         Text(
           'Geolocator: \n ${controller.geolocatorTestPosition.toString()}',
-          style: GoogleFonts.sairaCondensed(
-            fontSize: 18,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(
-          'Location P: \n ${controller.locationTestPosition.toString()} ',
           style: GoogleFonts.sairaCondensed(
             fontSize: 18,
             color: Colors.white,
