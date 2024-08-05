@@ -28,6 +28,7 @@ class RideController extends GetxController {
   String startAddress = '';
   String endAddress = '';
   double totalDistance = 0.0;
+  double rideDistance = 0.0;
   double speed = 0.0;
   String startTime = '';
   String endTime = '';
@@ -70,6 +71,7 @@ class RideController extends GetxController {
       startTime = DateTime.now().toString();
       endTime = '';
       totalDistance = 0.0;
+      rideDistance = 0.0;
       speed = 0.0;
       extraAmount = 0.0;
       tollsAmount = 0.0;
@@ -131,14 +133,15 @@ class RideController extends GetxController {
             position.longitude,
           );
 
-          if (currentSpeed >= 1) {
+          if (currentSpeed >= 1 && currentSpeed < 26) {
             // isMoving = true;
             // movingTime += 1;
-            totalDistance += distance / 1000;
-          } else if (currentSpeed < 1) {
+            rideDistance += distance / 1000;
+          } else if (currentSpeed > 26) {
             // isMoving = false;
             // waitingTime += 1;
             // totalDistance += (distance - 0.001) / 1000;
+            totalDistance += distance / 1000;
           }
           // calculateFare();
           speed = currentSpeed;
@@ -173,10 +176,10 @@ class RideController extends GetxController {
           }
 
           if (isTracking) {
-            if (speed < 25) {
+            if (speed < 26) {
               isMoving = false;
               waitingTime += 1;
-            } else if (speed >= 25) {
+            } else if (speed >= 26) {
               isMoving = true;
               movingTime += 1;
             }
@@ -363,16 +366,33 @@ class RideController extends GetxController {
   }
 
   Future<void> getStraightDistance() async {
-    final position = positions;
+    final positionS = positions;
     double temDistance = 0.0;
-    if (position.isNotEmpty) {
-      final distance = vincentyDistance(
-        position.first.positionLatitude,
-        position.first.positionLongitude,
-        position.last.positionLatitude,
-        position.last.positionLongitude,
-      );
-      temDistance = distance / 1000;
+    if (positionS.isNotEmpty) {
+      for (int i = 0; i < positionS.length - 1; i++) {
+        final start = positionS[i];
+        final end = positionS[i + 1];
+        if (start.positionLatitude == end.positionLatitude &&
+            start.positionLongitude == end.positionLongitude) {
+          continue;
+        }
+        if (start.positionLatitude == 0.0 &&
+            start.positionLongitude == 0.0 &&
+            end.positionLatitude == 0.0 &&
+            end.positionLongitude == 0.0) {
+          continue;
+        }
+
+        final distance = vincentyDistance(
+          start.positionLatitude,
+          start.positionLongitude,
+          end.positionLatitude,
+          end.positionLongitude,
+        );
+        if (distance > 0.5) {
+          temDistance += distance / 1000;
+        }
+      }
 
       totalStraightDistance = temDistance;
       update();
