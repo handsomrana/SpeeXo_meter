@@ -32,6 +32,7 @@ class TollController extends GetxController {
       price: tPrice,
       isSelected: false,
     );
+    // ignore: invalid_use_of_protected_member
     tolls.value.add(newToll);
     tolls.refresh();
   }

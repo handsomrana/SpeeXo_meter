@@ -282,10 +282,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_plugin_android_lifecycle
-      sha256: c6b0b4c05c458e1c01ad9bcc14041dd7b1f6783d487be4386f793f47a8a4d03e
+      sha256: "9d98bd47ef9d34e803d438f17fd32b116d31009f534a6fa5ce3a1167f189a6de"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.20"
+    version: "2.0.21"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -420,26 +420,26 @@ packages:
     dependency: transitive
     description:
       name: google_maps
-      sha256: "47eef3836b49bb030d5cb3afc60b8451408bf34cf753e571b645d6529eb4251a"
+      sha256: "463b38e5a92a05cde41220a11fd5eef3847031fef3e8cf295ac76ec453246907"
       url: "https://pub.dev"
     source: hosted
-    version: "7.1.0"
+    version: "8.0.0"
   google_maps_flutter:
     dependency: "direct main"
     description:
       name: google_maps_flutter
-      sha256: acf0ec482d86b2ac55ade80597ce7f797a47971f5210ebfd030f0d58130e0a94
+      sha256: a7a2d2a3588c4a3e3b9dd98477dcf3d97e4ef32d8d46fd2ffb3c0e6f836fca1a
       url: "https://pub.dev"
     source: hosted
-    version: "2.7.0"
+    version: "2.7.1"
   google_maps_flutter_android:
     dependency: transitive
     description:
       name: google_maps_flutter_android
-      sha256: f6306d83edddba7aa017ca6f547d6f36a1443f90ed49d91d48ef70d7aa86e2e1
+      sha256: c8377573754f0da06dab69c1b66c6a825aa10e9de60297dc157d94cdd7653d10
       url: "https://pub.dev"
     source: hosted
-    version: "2.12.0"
+    version: "2.12.2"
   google_maps_flutter_ios:
     dependency: transitive
     description:
@@ -460,10 +460,10 @@ packages:
     dependency: transitive
     description:
       name: google_maps_flutter_web
-      sha256: f3155c12119d8a5c2732fdf39ceb5cc095bc662059a03b4ea23294ecebe1d199
+      sha256: "0cbdb9e3efad42949131536d55ac0d8c51f802a8f41d0c288c24328239372c9a"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.8"
+    version: "0.5.9+2"
   graphs:
     dependency: transitive
     description:
@@ -552,14 +552,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.7"
-  js_wrapping:
-    dependency: transitive
-    description:
-      name: js_wrapping
-      sha256: e385980f7c76a8c1c9a560dfb623b890975841542471eade630b2871d243851c
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.7.4"
   json_annotation:
     dependency: transitive
     description:

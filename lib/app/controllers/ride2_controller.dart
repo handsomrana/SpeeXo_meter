@@ -26,11 +26,6 @@ class TaxiFareController extends GetxController {
 
   late StreamSubscription<Position> positionStream;
 
-  @override
-  void onInit() {
-    super.onInit();
-    // startTracking();
-  }
 
   // void startTracking() {
   //   isTracking.value = true;
