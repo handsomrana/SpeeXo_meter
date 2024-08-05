@@ -5,6 +5,7 @@ import 'package:speed_meter_app/app/controllers/ride_controller.dart';
 import 'package:speed_meter_app/utils/colors.dart';
 import 'package:speed_meter_app/utils/styles.dart';
 
+// ignore: must_be_immutable
 class EndAlertDialogWidget extends StatelessWidget {
   EndAlertDialogWidget({super.key, required this.orientation});
 

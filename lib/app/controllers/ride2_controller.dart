@@ -66,7 +66,6 @@
 //       totalFare = 0.0;
 //       movingFare = 0.0;
 //       update();
-
 //       positionStreamSubscription = Geolocator.getPositionStream(
 //         locationSettings: const LocationSettings(
 //           accuracy: LocationAccuracy.high,
