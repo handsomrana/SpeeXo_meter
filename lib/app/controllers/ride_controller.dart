@@ -142,6 +142,7 @@ class RideController extends GetxController {
             // waitingTime += 1;
             // totalDistance += (distance - 0.001) / 1000;
             totalDistance += distance / 1000;
+            await savePositionToLocal();
           }
           // calculateFare();
           speed = currentSpeed;
@@ -164,7 +165,9 @@ class RideController extends GetxController {
       updateTimer = Timer.periodic(
         const Duration(seconds: 1),
         (timer) async {
-          await savePositionToLocal();
+          if (speed >= 26) {
+            await savePositionToLocal();
+          }
           final tloc = await Geolocator.getCurrentPosition();
           geolocatorTestPosition = tloc;
           if (!tloc.isMocked) {

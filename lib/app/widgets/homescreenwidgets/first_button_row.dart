@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:speed_meter_app/app/local_database/isar_services.dart';
 import 'package:speed_meter_app/app/views/history_view.dart';
-import 'package:speed_meter_app/app/views/ride2view.dart';
 import 'package:speed_meter_app/utils/styles.dart';
 
 class HomeScreenFirstButtonRow extends StatelessWidget {
@@ -23,7 +22,7 @@ class HomeScreenFirstButtonRow extends StatelessWidget {
           Expanded(
             child: ElevatedButton(
               onPressed: () {
-                Get.to(() => TaxiFareView());
+                // Get.to(() => TaxiFareView());
               },
               style: elevatedButtonStyle.copyWith(),
               child: ConstrainedBox(
