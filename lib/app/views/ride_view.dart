@@ -210,15 +210,32 @@ class RideView extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                ElevatedButton(
-                  style: elevatedButtonStyle,
-                  onPressed: controller.isPaused
-                      ? controller.onPauseTracking
-                      : controller.onResumeTracking,
-                  child: Text(
-                    controller.isPaused ? 'Stop Ride' : 'Start Ride',
-                    style: elevatdButtonTextstyle,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: ElevatedButton(
+                          style: elevatedButtonStyle.copyWith(
+                            backgroundColor: !controller.isPaused
+                                ? WidgetStateProperty.all<Color>(Colors.red)
+                                : WidgetStateProperty.all<Color>(Colors.green),
+                          ),
+                          onPressed: !controller.isPaused
+                              ? controller.onPauseTracking
+                              : controller.onResumeTracking,
+                          child: Text(
+                            !controller.isPaused ? 'Stop Ride' : 'Start Ride',
+                            style: elevatdButtonTextstyle.copyWith(
+                              color: !controller.isPaused
+                                  ? Colors.white
+                                  : Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 20,
