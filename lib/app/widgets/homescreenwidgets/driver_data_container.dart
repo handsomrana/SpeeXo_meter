@@ -33,7 +33,7 @@ class DriverDataWidgetContainer extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'SOLUTION 1',
+                    'Actual Fare',
                     style: GoogleFonts.kalam(
                       fontSize: 20,
                       color: darkMainColor,
@@ -76,7 +76,8 @@ class DriverDataWidgetContainer extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "SOLUTION 2",
+                    "Total Distance \n Fare",
+                    textAlign: TextAlign.center,
                     style: GoogleFonts.kalam(
                       fontSize: 20,
                       color: darkMainColor,
@@ -101,41 +102,6 @@ class DriverDataWidgetContainer extends StatelessWidget {
                   ),
                 ],
               ),
-              const VerticalDivider(
-                color: Colors.black54,
-                thickness: 1,
-                width: 1,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'SOLUTION 3',
-                    style: GoogleFonts.kalam(
-                      fontSize: 20,
-                      color: darkMainColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    'Location Fare: \n ${controller.totalStraightFare.toStringAsFixed(2)}',
-                    style: GoogleFonts.sairaCondensed(
-                      fontSize: 20,
-                      color: darkMainColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    'Distance: \n ${controller.totalStraightDistance.toStringAsFixed(2)} ',
-                    style: GoogleFonts.sairaCondensed(
-                      fontSize: 15,
-                      color: darkMainColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              )
             ],
           ),
         );

@@ -12,7 +12,7 @@ class RideController extends GetxController {
   final IsarServices isarServices = IsarServices();
   double packageCost = 4.92;
   double movingRate = 2.29;
-  double waitingRate = 0.01583;
+  double waitingRate = 0.0158;
   var selectedPackage = 'DEFAULT'.obs;
   double extraAmount = 0.0;
   double tollsAmount = 0.0;
@@ -35,17 +35,17 @@ class RideController extends GetxController {
   Position? lastPosition;
   Position? startPosition;
   double totalLocalDistance = 0.0;
-  double totalStraightDistance = 0.0;
-  double totalStraightFare = 0.0;
   double totalLocalFare = 0.0;
   double localMovingFare = 0.0;
-  double straightMovingFare = 0.0;
-  Position? geolocatorTestPosition;
-  double totalStreamDistance = 0.0;
-  double newStreamFare = 0.0;
-  double streamMovingFare = 0.0;
-  final positionsT = <TunnelSolutionCollection>[].obs;
-  final positions = <TunnelSolutionCollection>[].obs;
+  // double totalStraightDistance = 0.0;
+  // double totalStraightFare = 0.0;
+  // double straightMovingFare = 0.0;
+  // Position? geolocatorTestPosition;
+  // double totalStreamDistance = 0.0;
+  // double newStreamFare = 0.0;
+  // double streamMovingFare = 0.0;
+  // final positionsT = <TunnelSolutionCollection>[].obs;
+  // final positions = <TunnelSolutionCollection>[].obs;
   // Position? tunnelEndPosition;
   // double tunnelDistance = 0.0;
   // double tunnelFare = 0.0;
@@ -54,11 +54,13 @@ class RideController extends GetxController {
   // String tunnelStartTime = '';
   // String tunnelEndTime = '';
   bool isTunnel = false;
+  bool isPaused = false;
 
   StreamSubscription<Position>? positionStreamSubscription;
   Timer? updateTimer;
   int waitingTime = 0; // Store waiting time in seconds
   int movingTime = 0;
+  int pauseTime = 0;
 
   Future<void> startTracking() async {
     if (!(await _checkLocationPermission())) {
@@ -68,6 +70,7 @@ class RideController extends GetxController {
     if (await _checkLocationPermission()) {
       isTracking = true;
       isMoving = false;
+      isPaused = false;
       startTime = DateTime.now().toString();
       endTime = '';
       totalDistance = 0.0;
@@ -76,13 +79,13 @@ class RideController extends GetxController {
       extraAmount = 0.0;
       tollsAmount = 0.0;
       startPosition = await Geolocator.getCurrentPosition();
-      positionsT.add(
-        TunnelSolutionCollection(
-          positionLatitude: startPosition!.latitude,
-          positionLongitude: startPosition!.longitude,
-          timeStamp: DateTime.now(),
-        ),
-      );
+      // positionsT.add(
+      //   TunnelSolutionCollection(
+      //     positionLatitude: startPosition!.latitude,
+      //     positionLongitude: startPosition!.longitude,
+      //     timeStamp: DateTime.now(),
+      //   ),
+      // );
       lastPosition = null;
       await savePositionToLocal();
       waitingTime = 0;
@@ -91,15 +94,15 @@ class RideController extends GetxController {
       movingFare = 0.0;
       waitingFare = 0.0;
       totalLocalDistance = 0.0;
-      totalStraightDistance = 0.0;
-      totalStreamDistance = 0.0;
-      newStreamFare = 0.0;
-      streamMovingFare = 0.0;
       totalLocalFare = 0.0;
       localMovingFare = 0.0;
-      straightMovingFare = 0.0;
-      totalStraightFare = 0.0;
-      geolocatorTestPosition = await Geolocator.getCurrentPosition();
+      // totalStraightDistance = 0.0;
+      // totalStreamDistance = 0.0;
+      // newStreamFare = 0.0;
+      // streamMovingFare = 0.0;
+      // straightMovingFare = 0.0;
+      // totalStraightFare = 0.0;
+      // geolocatorTestPosition = await Geolocator.getCurrentPosition();
       // tunnelTime = 0.0;
       // tunnelDistance = 0.0;
       // tunnelFare = 0.0;
@@ -112,19 +115,20 @@ class RideController extends GetxController {
       positionStreamSubscription = Geolocator.getPositionStream(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.high,
-          distanceFilter: 1,
+          distanceFilter: 5,
         ),
       ).listen((Position position) async {
         final currentSpeed = position.speed * 3.6;
 
         if (lastPosition != null) {
-          positionsT.add(
-            TunnelSolutionCollection(
-              positionLatitude: position.latitude,
-              positionLongitude: position.longitude,
-              timeStamp: DateTime.now(),
-            ),
-          );
+          // positionsT.add(
+          //   TunnelSolutionCollection(
+          //     positionLatitude: position.latitude,
+          //     positionLongitude: position.longitude,
+          //     timeStamp: DateTime.now(),
+          //   ),
+          // );
+          await savePositionToLocal();
           isTunnel = false;
           final distance = vincentyDistance(
             lastPosition!.latitude,
@@ -142,19 +146,21 @@ class RideController extends GetxController {
             // waitingTime += 1;
             // totalDistance += (distance - 0.001) / 1000;
             totalDistance += distance / 1000;
+            rideDistance += distance / 1000;
             await savePositionToLocal();
           }
           // calculateFare();
           speed = currentSpeed;
           update();
         } else if (lastPosition == position) {
-          positionsT.add(
-            TunnelSolutionCollection(
-              positionLatitude: position.latitude,
-              positionLongitude: position.longitude,
-              timeStamp: DateTime.now(),
-            ),
-          );
+          // positionsT.add(
+          //   TunnelSolutionCollection(
+          //     positionLatitude: position.latitude,
+          //     positionLongitude: position.longitude,
+          //     timeStamp: DateTime.now(),
+          //   ),
+          // );
+          await savePositionToLocal();
           isTunnel = true;
           update();
         }
@@ -168,14 +174,114 @@ class RideController extends GetxController {
           if (speed >= 26) {
             await savePositionToLocal();
           }
-          final tloc = await Geolocator.getCurrentPosition();
-          geolocatorTestPosition = tloc;
-          if (!tloc.isMocked) {
-            positions.add(TunnelSolutionCollection(
-              positionLatitude: tloc.latitude,
-              positionLongitude: tloc.longitude,
-              timeStamp: DateTime.now(),
-            ));
+          // final tloc = await Geolocator.getCurrentPosition();
+          // geolocatorTestPosition = tloc;
+          // if (!tloc.isMocked) {
+          //   positions.add(TunnelSolutionCollection(
+          //     positionLatitude: tloc.latitude,
+          //     positionLongitude: tloc.longitude,
+          //     timeStamp: DateTime.now(),
+          //   ));
+          // }
+
+          if (isTracking) {
+            if (speed < 26) {
+              isMoving = false;
+              waitingTime += 1;
+            } else if (speed >= 26) {
+              isMoving = true;
+              movingTime += 1;
+            }
+            // await getDistanceFromStream();
+            // calculateStreamFare();
+            calculateFare();
+            await getDistanceFromLocal();
+            calculateLocalFare();
+            update();
+          }
+        },
+      );
+    } else {
+      if (kDebugMode) {
+        print('Location permission not granted');
+      }
+    }
+  }
+
+  Future<void> onPauseTracking() async {
+    isTracking = false;
+    isPaused = true;
+    // endTime = DateTime.now().toString();
+    positionStreamSubscription?.cancel();
+    updateTimer?.cancel();
+    update();
+    while (isPaused) {
+      pauseTime++;
+      update();
+      await Future.delayed(const Duration(seconds: 1));
+    }
+    // tunnelDistance = 0.0;
+    // tunnelFare = 0.0;
+    // tunnelEndPosition = null;
+    // tunnelStartPosition = await Geolocator.getCurrentPosition();
+    // tunnelStartTime = DateTime.now().toString();
+    // tunnelEndTime = '';
+  }
+
+  Future<void> onResumeTracking() async {
+    isPaused = false;
+    update();
+    if (!(await _checkLocationPermission())) {
+      await _requestLocationPermission();
+    }
+
+    if (await _checkLocationPermission()) {
+      isTracking = true;
+      isMoving = false;
+      speed = 0.0;
+      lastPosition = await Geolocator.getCurrentPosition();
+      update();
+
+      positionStreamSubscription = Geolocator.getPositionStream(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          distanceFilter: 5,
+        ),
+      ).listen((Position position) async {
+        final currentSpeed = position.speed * 3.6;
+
+        if (lastPosition != null) {
+          await savePositionToLocal();
+          isTunnel = false;
+          final distance = vincentyDistance(
+            lastPosition!.latitude,
+            lastPosition!.longitude,
+            position.latitude,
+            position.longitude,
+          );
+
+          if (currentSpeed >= 1 && currentSpeed < 26) {
+            rideDistance += distance / 1000;
+          } else if (currentSpeed > 26) {
+            totalDistance += distance / 1000;
+            rideDistance += distance / 1000;
+            await savePositionToLocal();
+          }
+          speed = currentSpeed;
+          update();
+        } else if (lastPosition == position) {
+          await savePositionToLocal();
+          isTunnel = true;
+          update();
+        }
+        lastPosition = position;
+      });
+
+      updateTimer = Timer.periodic(
+        const Duration(seconds: 1),
+        (timer) async {
+          if (speed >= 26) {
+            await savePositionToLocal();
           }
 
           if (isTracking) {
@@ -186,9 +292,9 @@ class RideController extends GetxController {
               isMoving = true;
               movingTime += 1;
             }
-            await getDistanceFromStream();
-            calculateStreamFare();
             calculateFare();
+            await getDistanceFromLocal();
+            calculateLocalFare();
             update();
           }
         },
@@ -203,15 +309,13 @@ class RideController extends GetxController {
   void stopTracking() async {
     await savePositionToLocal();
     await getDistanceFromLocal();
-    await getDistanceFromStream();
-    await getStraightDistance();
     calculateLocalFare();
-    calculateStraightFare();
-    positions.value = [];
-    // print(totalDistance.toStringAsFixed(4));
-    // print(totalLocalDistance.toStringAsFixed(4));
+    // await getDistanceFromStream();
+    // await getStraightDistance();
+    // calculateStraightFare();
+    // positions.value = [];
     isTracking = false;
-    positionsT.value = [];
+    // positionsT.value = [];
     endTime = DateTime.now().toString();
     await getAddressFromCoordinates();
     await addRidetoLocal();
@@ -302,39 +406,6 @@ class RideController extends GetxController {
     await isarServices.addPosition(newPosition);
   }
 
-  Future<void> getDistanceFromStream() async {
-    final positioned = positionsT;
-    double temDistance = 0.0;
-    if (positioned.isNotEmpty) {
-      for (int i = 0; i < positioned.length - 1; i++) {
-        final start = positioned[i];
-        final end = positioned[i + 1];
-        if (start.positionLatitude == end.positionLatitude &&
-            start.positionLongitude == end.positionLongitude) {
-          continue;
-        }
-        if (start.positionLatitude == 0.0 &&
-            start.positionLongitude == 0.0 &&
-            end.positionLatitude == 0.0 &&
-            end.positionLongitude == 0.0) {
-          continue;
-        }
-
-        final distance = vincentyDistance(
-          start.positionLatitude,
-          start.positionLongitude,
-          end.positionLatitude,
-          end.positionLongitude,
-        );
-        if (distance > 1) {
-          temDistance += distance / 1000;
-        }
-      }
-      totalStreamDistance = temDistance;
-      update();
-    }
-  }
-
   Future<void> getDistanceFromLocal() async {
     final positions = await isarServices.getPositions();
     double temDistance = 0.0;
@@ -364,40 +435,6 @@ class RideController extends GetxController {
         }
       }
       totalLocalDistance = temDistance;
-      update();
-    }
-  }
-
-  Future<void> getStraightDistance() async {
-    final positionS = positions;
-    double temDistance = 0.0;
-    if (positionS.isNotEmpty) {
-      for (int i = 0; i < positionS.length - 1; i++) {
-        final start = positionS[i];
-        final end = positionS[i + 1];
-        if (start.positionLatitude == end.positionLatitude &&
-            start.positionLongitude == end.positionLongitude) {
-          continue;
-        }
-        if (start.positionLatitude == 0.0 &&
-            start.positionLongitude == 0.0 &&
-            end.positionLatitude == 0.0 &&
-            end.positionLongitude == 0.0) {
-          continue;
-        }
-
-        final distance = vincentyDistance(
-          start.positionLatitude,
-          start.positionLongitude,
-          end.positionLatitude,
-          end.positionLongitude,
-        );
-        if (distance > 0.5) {
-          temDistance += distance / 1000;
-        }
-      }
-
-      totalStraightDistance = temDistance;
       update();
     }
   }
@@ -443,6 +480,12 @@ class RideController extends GetxController {
     update();
   }
 
+  void calculateTotalWaitingTime() {
+    waitingTime = waitingTime - pauseTime;
+    pauseTime = 0;
+    update();
+  }
+
   void calculateFare() {
     movingFare = totalDistance * movingRate;
     waitingFare = waitingTime * waitingRate;
@@ -450,31 +493,11 @@ class RideController extends GetxController {
         tollsAmount + extraAmount + packageCost + movingFare + waitingFare;
   }
 
-  void calculateStreamFare() {
-    streamMovingFare = totalStreamDistance * movingRate;
-    waitingFare = waitingTime * waitingRate;
-    newStreamFare = tollsAmount +
-        extraAmount +
-        packageCost +
-        waitingFare +
-        streamMovingFare;
-  }
-
   void calculateLocalFare() {
     localMovingFare = totalLocalDistance * movingRate;
     waitingFare = waitingTime * waitingRate;
     totalLocalFare =
         tollsAmount + extraAmount + packageCost + waitingFare + localMovingFare;
-  }
-
-  void calculateStraightFare() {
-    straightMovingFare = totalStraightDistance * movingRate;
-    waitingFare = waitingTime * waitingRate;
-    totalStraightFare = tollsAmount +
-        extraAmount +
-        packageCost +
-        waitingFare +
-        straightMovingFare;
   }
 
   String calculateDuration(String start, String end) {
@@ -512,93 +535,96 @@ class RideController extends GetxController {
 }
 
 
-  // Future<void> onResumeTracking() async {
-  //   if (!(await _checkLocationPermission())) {
-  //     await _requestLocationPermission();
-  //   }
 
-  //   if (await _checkLocationPermission()) {
-  //     isTracking = true;
-  //     isMoving = false;
-  //     isTunnel = false;
-  //     speed = 0.0;
-  //     // lastPosition = await Geolocator.getCurrentPosition();
-  //     lastPosition = null;
-  //     tunnelEndPosition = await Geolocator.getCurrentPosition();
-  //     tunnelEndTime = DateTime.now().toString();
-  //     calculateTunnelFare();
-  //     update();
 
-  //     positionStreamSubscription = Geolocator.getPositionStream(
-  //       locationSettings: const LocationSettings(
-  //         accuracy: LocationAccuracy.high,
-  //         distanceFilter: 1,
-  //       ),
-  //     ).listen((Position position) {
-  //       final currentSpeed = position.speed * 3.6;
+// Future<void> getStraightDistance() async {
+//     final positionS = positions;
+//     double temDistance = 0.0;
+//     if (positionS.isNotEmpty) {
+//       for (int i = 0; i < positionS.length - 1; i++) {
+//         final start = positionS[i];
+//         final end = positionS[i + 1];
+//         if (start.positionLatitude == end.positionLatitude &&
+//             start.positionLongitude == end.positionLongitude) {
+//           continue;
+//         }
+//         if (start.positionLatitude == 0.0 &&
+//             start.positionLongitude == 0.0 &&
+//             end.positionLatitude == 0.0 &&
+//             end.positionLongitude == 0.0) {
+//           continue;
+//         }
 
-  //       if (lastPosition == null) {
-  //         tunnelTime += 1;
-  //         update();
+//         final distance = vincentyDistance(
+//           start.positionLatitude,
+//           start.positionLongitude,
+//           end.positionLatitude,
+//           end.positionLongitude,
+//         );
+//         if (distance > 0.5) {
+//           temDistance += distance / 1000;
+//         }
+//       }
+
+//       totalStraightDistance = temDistance;
+//       update();
+//     }
+//   }
+
+
+
+
+// void calculateStreamFare() {
+//     streamMovingFare = totalStreamDistance * movingRate;
+//     waitingFare = waitingTime * waitingRate;
+//     newStreamFare = tollsAmount +
+//         extraAmount +
+//         packageCost +
+//         waitingFare +
+//         streamMovingFare;
+//   }
+
+// void calculateStraightFare() {
+//     straightMovingFare = totalStraightDistance * movingRate;
+//     waitingFare = waitingTime * waitingRate;
+//     totalStraightFare = tollsAmount +
+//         extraAmount +
+//         packageCost +
+//         waitingFare +
+//         straightMovingFare;
+//   }
+  
+  // Future<void> getDistanceFromStream() async {
+  //   final positioned = positionsT;
+  //   double temDistance = 0.0;
+  //   if (positioned.isNotEmpty) {
+  //     for (int i = 0; i < positioned.length - 1; i++) {
+  //       final start = positioned[i];
+  //       final end = positioned[i + 1];
+  //       if (start.positionLatitude == end.positionLatitude &&
+  //           start.positionLongitude == end.positionLongitude) {
+  //         continue;
   //       }
-  //       if (lastPosition != null) {
-  //         final distance = vincentyDistance(
-  //           lastPosition!.latitude,
-  //           lastPosition!.longitude,
-  //           position.latitude,
-  //           position.longitude,
-  //         );
-
-  //         if (currentSpeed >= 1) {
-  //           // isMoving = true;
-  //           // movingTime += 1;
-  //           totalDistance += distance / 1000;
-  //         } else if (currentSpeed < 1) {
-  //           // isMoving = false;
-  //           // waitingTime += 1;
-  //           // totalDistance += (distance - 0.001) / 1000;
-  //         }
-  //         // calculateFare();
-  //         speed = currentSpeed;
-  //         update();
+  //       if (start.positionLatitude == 0.0 &&
+  //           start.positionLongitude == 0.0 &&
+  //           end.positionLatitude == 0.0 &&
+  //           end.positionLongitude == 0.0) {
+  //         continue;
   //       }
 
-  //       lastPosition = position;
-  //     });
-
-  //     updateTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-  //       if (isTracking) {
-  //         if (speed < 25) {
-  //           isMoving = false;
-  //           waitingTime += 1;
-  //         } else if (speed >= 25) {
-  //           isMoving = true;
-  //           movingTime += 1;
-  //         }
-  //         calculateFare();
-  //         update();
+  //       final distance = vincentyDistance(
+  //         start.positionLatitude,
+  //         start.positionLongitude,
+  //         end.positionLatitude,
+  //         end.positionLongitude,
+  //       );
+  //       if (distance > 1) {
+  //         temDistance += distance / 1000;
   //       }
-  //     });
-  //   } else {
-  //     if (kDebugMode) {
-  //       print('Location permission not granted');
   //     }
+  //     totalStreamDistance = temDistance;
+  //     update();
   //   }
-  // }
-
-  // Future<void> onPauseTracking() async {
-  //   isTracking = false;
-  //   isTunnel = true;
-  //   // endTime = DateTime.now().toString();
-  //   positionStreamSubscription?.cancel();
-  //   updateTimer?.cancel();
-  //   tunnelDistance = 0.0;
-  //   tunnelFare = 0.0;
-  //   tunnelEndPosition = null;
-  //   tunnelStartPosition = await Geolocator.getCurrentPosition();
-  //   tunnelStartTime = DateTime.now().toString();
-  //   tunnelEndTime = '';
-  //   update();
   // }
 
   // void calculateTunnelFare() {

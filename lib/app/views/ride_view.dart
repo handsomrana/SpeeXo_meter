@@ -8,7 +8,6 @@ import 'package:speed_meter_app/app/widgets/add_extra_widget.dart';
 import 'package:speed_meter_app/app/widgets/add_tolls_dialog.dart';
 import 'package:speed_meter_app/app/widgets/end_alert_dialog_widget.dart';
 import 'package:speed_meter_app/utils/styles.dart';
-import 'package:speed_meter_app/utils/colors.dart';
 
 // ignore: must_be_immutable
 class RideView extends StatelessWidget {
@@ -138,7 +137,7 @@ class RideView extends StatelessWidget {
                     ),
                   ),
                 Text(
-                  'Fare: ${controller.newStreamFare.toStringAsFixed(1)} \$',
+                  'Fare: ${controller.totalLocalFare.toStringAsFixed(1)} \$',
                   style: GoogleFonts.blackOpsOne(
                     fontSize: 40,
                     color: Colors.white,
@@ -148,7 +147,7 @@ class RideView extends StatelessWidget {
                   height: 20,
                 ),
                 Text(
-                  'Distance: ${controller.totalStreamDistance.toStringAsFixed(1)} km',
+                  'Distance: ${controller.rideDistance.toStringAsFixed(1)} km',
                   style: GoogleFonts.sairaCondensed(
                     fontSize: 20,
                     color: Colors.white.withOpacity(0.8),
@@ -163,22 +162,22 @@ class RideView extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(
-                  'Testing',
-                  style: GoogleFonts.kalam(
-                    fontSize: 20,
-                    color: darkMainColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'Geolocator: \n ${controller.geolocatorTestPosition.toString()}',
-                  style: GoogleFonts.sairaCondensed(
-                    fontSize: 20,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                // Text(
+                //   'Testing',
+                //   style: GoogleFonts.kalam(
+                //     fontSize: 20,
+                //     color: darkMainColor,
+                //     fontWeight: FontWeight.bold,
+                //   ),
+                // ),
+                // Text(
+                //   'Geolocator: \n ${controller.geolocatorTestPosition.toString()}',
+                //   style: GoogleFonts.sairaCondensed(
+                //     fontSize: 20,
+                //     color: Colors.white,
+                //     fontWeight: FontWeight.bold,
+                //   ),
+                // ),
                 const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -207,6 +206,19 @@ class RideView extends StatelessWidget {
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  style: elevatedButtonStyle,
+                  onPressed: controller.isPaused
+                      ? controller.onPauseTracking
+                      : controller.onResumeTracking,
+                  child: Text(
+                    controller.isPaused ? 'Stop Ride' : 'Start Ride',
+                    style: elevatdButtonTextstyle,
+                  ),
                 ),
                 const SizedBox(
                   height: 20,
@@ -267,7 +279,7 @@ class RideView extends StatelessWidget {
             ),
           ),
         Text(
-          'Fare: ${controller.newStreamFare.toStringAsFixed(1)} \$',
+          'Fare: ${controller.totalLocalFare.toStringAsFixed(1)} \$',
           style: GoogleFonts.blackOpsOne(
             fontSize: 40,
             color: Colors.white,
@@ -277,7 +289,7 @@ class RideView extends StatelessWidget {
           height: 20,
         ),
         Text(
-          'Distance: ${controller.totalStreamDistance.toStringAsFixed(1)} km',
+          'Distance: ${controller.rideDistance.toStringAsFixed(1)} km',
           style: GoogleFonts.sairaCondensed(
             fontSize: 20,
             color: Colors.white.withOpacity(0.8),
@@ -293,22 +305,22 @@ class RideView extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 30),
-        Text(
-          'Testing',
-          style: GoogleFonts.kalam(
-            fontSize: 20,
-            color: darkMainColor,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(
-          'Geolocator: \n ${controller.geolocatorTestPosition.toString()}',
-          style: GoogleFonts.sairaCondensed(
-            fontSize: 18,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        // Text(
+        //   'Testing',
+        //   style: GoogleFonts.kalam(
+        //     fontSize: 20,
+        //     color: darkMainColor,
+        //     fontWeight: FontWeight.bold,
+        //   ),
+        // ),
+        // Text(
+        //   'Geolocator: \n ${controller.geolocatorTestPosition.toString()}',
+        //   style: GoogleFonts.sairaCondensed(
+        //     fontSize: 18,
+        //     color: Colors.white,
+        //     fontWeight: FontWeight.bold,
+        //   ),
+        // ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -344,6 +356,31 @@ class RideView extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: ElevatedButton(
+                  style: elevatedButtonStyle.copyWith(
+                    backgroundColor: !controller.isPaused
+                        ? WidgetStateProperty.all<Color>(Colors.red)
+                        : WidgetStateProperty.all<Color>(Colors.green),
+                  ),
+                  onPressed: !controller.isPaused
+                      ? controller.onPauseTracking
+                      : controller.onResumeTracking,
+                  child: Text(
+                    !controller.isPaused ? 'Stop Ride' : 'Start Ride',
+                    style: elevatdButtonTextstyle.copyWith(
+                      color: !controller.isPaused ? Colors.white : Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: ElevatedButton(
                   onPressed: () {
                     showEndAlert(context, isTablet);
                   },
@@ -357,15 +394,6 @@ class RideView extends StatelessWidget {
             ),
           ],
         ),
-        // ElevatedButton(
-        //   onPressed: controller.isTracking
-        //       ? controller.stopTracking
-        //       : controller.startTracking,
-        //   child: Text(
-        //     controller.isTracking ? 'Stop' : 'Start',
-        //     style: TextStyle(fontSize: buttonFontSize),
-        //   ),
-        // ),
       ],
     );
   }
